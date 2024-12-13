@@ -1,0 +1,10 @@
+/* Center align the search bar */
+.p-menubar .p-inputgroup {
+  margin-left: auto; /* Push search bar to the right */
+}
+.p-inputgroup input {
+  border-radius: 2px 0 0 2px; /* Rounded corners for the input */
+}
+.p-inputgroup .p-button {
+  border-radius: 0 2px 2px 0; /* Rounded corners for the button */
+}

@@ -1,0 +1,20 @@
+.custom-border-round {
+  border-radius: 20px;
+}
+.validation-message {
+  color: red;
+  margin-left: 1rem;
+}
+.relative-container {
+  position: relative;
+  margin-bottom: 1rem; /* Adjust as needed */
+}
+
+.absolute-message {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  color: red; /* Adjust as needed */
+  font-size: 0.875rem; /* Adjust as needed */
+}
