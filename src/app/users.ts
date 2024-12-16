@@ -8,6 +8,6 @@ export interface User {
   phoneNumber: string;
   email: string;
   role: userRoleEnum;
-  birthdate: string;
+  birthdate: Date;
   age: number;
 }

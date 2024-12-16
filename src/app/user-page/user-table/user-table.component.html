@@ -1,26 +1,85 @@
-<div class="card mt-3 p-5">
+<div class="card mt-3 px-5 pb-5">
+  <!-- Table configuration -->
   <p-table
+    #dt2
     [value]="users"
-    [tableStyle]="{ 'min-width': '20rem' }"
-    [styleClass]="selectedSize.class"
+    dataKey="id"
     [paginator]="true"
     [rows]="pageSize"
-    [totalRecords]="totalElements"
+    [rowsPerPageOptions]="[10, 25, 50]"
+    [loading]="loading"
+    [globalFilterFields]="[
+      'firstname',
+      'surname',
+      'username',
+      'phoneNumber',
+      'email',
+      'birthdate',
+      'role'
+    ]"
     [lazy]="true"
+    [totalRecords]="totalElements"
+    [tableStyle]="{ 'min-width': '75rem' }"
     (onLazyLoad)="onPageChange($event)"
   >
+    <!-- Caption with Search -->
+    <ng-template pTemplate="caption">
+      <div class="flex justify-content-between align-items-center">
+        <h4 class="m-0">User Table</h4>
+        <div class="flex align-items-center">
+          <span class="pi pi-search mr-2"></span>
+          <input
+            type="text"
+            pInputText
+            placeholder="Search keyword"
+            (input)="dt2.filterGlobal(getInputValue($event), 'contains')"
+          />
+        </div>
+      </div>
+    </ng-template>
+
+    <!-- Table Header with Filters -->
     <ng-template pTemplate="header">
       <tr>
         <th>ID</th>
         <th>First Name</th>
         <th>Surname</th>
-        <th>Username</th>
+        <th>
+          <p-columnFilter
+            type="text"
+            field="username"
+            placeholder="Filter by Username"
+          ></p-columnFilter>
+        </th>
         <th>Phone Number</th>
-        <th>Email</th>
+        <th>
+          <p-columnFilter
+            type="text"
+            field="email"
+            placeholder="Filter by Email"
+          ></p-columnFilter>
+        </th>
         <th>Birthdate</th>
-        <th>Role</th>
+        <th>
+          <p-columnFilter
+            field="role"
+            matchMode="equals"
+            placeholder="Filter by Role"
+          >
+            <ng-template pTemplate="filter" let-filter="filterCallback">
+              <p-multiSelect
+                [options]="roles"
+                [(ngModel)]="selectedRoles"
+                placeholder="Select Roles"
+                (onChange)="filter($event.value)"
+              ></p-multiSelect>
+            </ng-template>
+          </p-columnFilter>
+        </th>
       </tr>
     </ng-template>
+
+    <!-- Table Body -->
     <ng-template pTemplate="body" let-user>
       <tr>
         <td>{{ user.id }}</td>
@@ -29,7 +88,7 @@
         <td>{{ user.username }}</td>
         <td>{{ user.phoneNumber }}</td>
         <td>{{ user.email }}</td>
-        <td>{{ user.birthdate }}</td>
+        <td>{{ user.birthdate | date }}</td>
         <td>{{ user.role }}</td>
       </tr>
     </ng-template>
