@@ -1,11 +1,23 @@
-<p-menubar [model]="items" class="shadow-2 surface-0">
+<p-menubar [model]="menuItems" class="shadow-2 surface-0">
   <div class="p-inputgroup ml-auto">
-    <input type="text" pInputText placeholder="Search" />
-    <button
+    <!-- <input type="text" pInputText placeholder="Search" /> -->
+    <!-- <button
       pButton
       type="button"
       icon="pi pi-search"
       class="p-button-primary"
+    ></button> -->
+    <div class="role-display">
+      <i class="pi pi-user"></i>
+      <span>{{ role }}</span>
+    </div>
+    <button
+      pButton
+      type="button"
+      label="Sign Out"
+      icon="pi pi-sign-out"
+      class="p-button ml-2"
+      (click)="onSignOut()"
     ></button>
   </div>
 </p-menubar>

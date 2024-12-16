@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { FormContainerComponent } from './login-page/form-container/form-container.component';
 import { HomeComponent } from './home-page/home/home.component';
 import { UsersComponent } from './user-page/users/users.component';
+import { authGuard } from './auth.guard';
 
 const routeConfig: Routes = [
   {
@@ -10,7 +11,7 @@ const routeConfig: Routes = [
     title: 'Login Page',
   },
   {
-    path: '',
+    path: 'home',
     component: HomeComponent,
     title: 'Home Page',
   },
@@ -18,6 +19,7 @@ const routeConfig: Routes = [
     path: 'users',
     component: UsersComponent,
     title: 'Users Page',
+    canActivate: [authGuard],
   },
 ];
 export default routeConfig;

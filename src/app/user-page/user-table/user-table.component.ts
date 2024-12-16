@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { User } from '../../users';
-import { AuthService } from '../../auth.service';
-import { UsersService } from '../../users.service';
+import { AuthService } from '../../services/auth.service';
+import { UsersService } from '../../services/users.service';
 import { TableModule } from 'primeng/table';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { CommonModule } from '@angular/common';
@@ -24,28 +24,26 @@ export class UserTableComponent implements OnInit {
   totalPages: number = 0;
 
   constructor(
-    private usersService: UsersService,
-    private authService: AuthService
-  ) {}
+    private usersService: UsersService
+  ) // private authService: AuthService
+  {}
 
   ngOnInit(): void {
-    this.accessToken = this.authService.getAccessToken();
-    this.loadUsers();
+    // this.accessToken = this.authService.getAccessToken();
+    // this.loadUsers();
   }
 
   loadUsers(): void {
-    this.usersService
-      .getUsers(this.accessToken, this.pageNo, this.pageSize)
-      .subscribe(
-        (response) => {
-          this.users = response.data;
-          this.totalElements = response.totalElements;
-          this.totalPages = response.totalPages;
-        },
-        (error) => {
-          console.error('There was an error!', error);
-        }
-      );
+    this.usersService.getUsers(this.pageNo, this.pageSize).subscribe(
+      (response) => {
+        this.users = response.data;
+        this.totalElements = response.totalElements;
+        this.totalPages = response.totalPages;
+      },
+      (error) => {
+        console.error('There was an error!', error);
+      }
+    );
   }
   onPageChange(event: any): void {
     this.pageNo = event.first / event.rows;
