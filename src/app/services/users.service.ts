@@ -6,31 +6,29 @@ import {
 } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { User } from './users';
+import { User } from '../users';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UsersService {
   baseUrl: string = 'http://localhost:8070/bff';
-  urlLogin: string = '/auth/login';
   urlUsers: string = '/users';
 
   constructor(private http: HttpClient) {}
 
   getUsers(
-    accessToken: string,
     page: number = 0,
     pageSize: number = 10
   ): Observable<{ data: User[]; totalElements: number; totalPages: number }> {
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${accessToken}`,
-    });
+    // const headers = new HttpHeaders({
+    //   Authorization: `Bearer ${accessToken}`,
+    // });
 
     const requestUrl = `${this.baseUrl}${this.urlUsers}?page=${page}&pageSize=${pageSize}`;
     console.log('Request URL:', requestUrl);
 
-    return this.http.get<any>(requestUrl, { headers }).pipe(
+    return this.http.get<any>(requestUrl).pipe(
       map((response) => ({
         data: response.data,
         totalElements: response.totalElements,
@@ -49,12 +47,5 @@ export class UsersService {
       );
     }
     return throwError('Something bad happened; please try again later.');
-  }
-
-  login(email: string, password: string): Observable<any> {
-    const loginData = { email, password };
-    console.log(loginData);
-
-    return this.http.post<any>(`${this.baseUrl}${this.urlLogin}`, loginData);
   }
 }
