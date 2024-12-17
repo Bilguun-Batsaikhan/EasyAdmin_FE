@@ -52,8 +52,8 @@ export class UserTableComponent implements OnInit {
   ngOnInit(): void {
     this.loading = false;
   }
-  // pass username filter and modify the method
-  loadUsers(filters?: { username?: string }): void {
+
+  loadUsers(filters?: { [key: string]: any }): void {
     this.loading = true;
 
     this.usersService.getUsers(this.pageNo, this.pageSize, filters).subscribe(
@@ -80,18 +80,34 @@ export class UserTableComponent implements OnInit {
     return (event.target as HTMLInputElement).value || '';
   }
 
-  // Whenever page changes, this method will be called
   onPageChange(event: any): void {
     this.pageNo = event.first / event.rows;
     this.pageSize = event.rows;
 
-    // Extract filters
-    const usernameFilter = event.filters?.['username']?.value || '';
+    const filters: any = {};
 
-    console.log('Filters:', event.filters);
-    console.log('Username Filter Value:', usernameFilter);
+    // Extract filters from the event (loop over the filters object)
+    for (const field in event.filters) {
+      if (event.filters[field]) {
+        // fields are defined in <p-columnFilter> as an object with the field name as the key
+        const filterMeta = event.filters[field][0]; // Access the first filter meta
+        const filterValue = filterMeta.value;
+        const matchMode = filterMeta.matchMode;
 
-    // Reload data with filters
-    this.loadUsers({ username: usernameFilter });
+        // Only add the filter to the filters object if a value is present
+        if (filterValue !== undefined && filterValue !== null) {
+          filters[field] = filterValue; // Store the filter value
+          if (matchMode) {
+            filters[`matchMode`] = matchMode; // Store the matchMode
+          }
+        }
+      }
+    }
+
+    console.log('Extracted Filters:', filters);
+    console.log('Pagination:', this.pageNo, this.pageSize);
+
+    // Call loadUsers with the extracted filters and pagination
+    this.loadUsers(filters);
   }
 }

@@ -20,16 +20,27 @@ export class UsersService {
   getUsers(
     page: number = 0,
     pageSize: number = 10,
-    filters?: { username?: string }
+    filters?: { [key: string]: any }
   ): Observable<{ data: User[]; totalElements: number; totalPages: number }> {
-    let requestUrl = `${this.baseUrl}${this.urlUsers}?page=${page}&pageSize=${pageSize}`;
+    // Base query parameters for pagination
+    let queryParams = `page=${page}&pageSize=${pageSize}`;
 
-    if (filters?.username) {
-      requestUrl += `&username=${encodeURIComponent(filters.username)}`;
+    // Append filters dynamically to the query parameters
+    if (filters) {
+      for (const key in filters) {
+        if (filters[key] !== undefined && filters[key] !== null) {
+          const value = encodeURIComponent(filters[key]);
+          const firstLetterLowerKey =
+            key.charAt(0).toLowerCase() + key.slice(1);
+          queryParams += `&${firstLetterLowerKey}=${value}`;
+        }
+      }
     }
 
+    const requestUrl = `${this.baseUrl}${this.urlUsers}?${queryParams}`;
     console.log('Request URL:', requestUrl);
 
+    // Make the HTTP GET request and map the response
     return this.http.get<any>(requestUrl).pipe(
       map((response) => ({
         data: response.data,

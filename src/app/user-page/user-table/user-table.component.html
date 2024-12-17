@@ -19,7 +19,7 @@
     ]"
     [lazy]="true"
     [totalRecords]="totalElements"
-    [tableStyle]="{ 'min-width': '75rem' }"
+    [tableStyle]="{ 'min-width': '75rem', 'table-layout': 'fixed' }"
     (onLazyLoad)="onPageChange($event)"
   >
     <!-- Caption with Search -->
@@ -38,32 +38,70 @@
       </div>
     </ng-template>
 
-    <!-- Table Header with Filters -->
+    <!-- Table Header with Pop-Up Filters -->
     <ng-template pTemplate="header">
       <tr>
-        <th>ID</th>
-        <th>First Name</th>
-        <th>Surname</th>
-        <th>
+        <th style="width: 5%">ID</th>
+        <th style="width: 12%">
+          First Name
+          <p-columnFilter
+            type="text"
+            field="firstname"
+            display="menu"
+            placeholder="Filter by First Name"
+          ></p-columnFilter>
+        </th>
+        <th style="width: 12%">
+          Surname
+          <p-columnFilter
+            type="text"
+            field="surname"
+            display="menu"
+            placeholder="Filter by Surname"
+          ></p-columnFilter>
+        </th>
+        <th style="width: 12%">
+          Username
           <p-columnFilter
             type="text"
             field="username"
+            display="menu"
             placeholder="Filter by Username"
           ></p-columnFilter>
         </th>
-        <th>Phone Number</th>
-        <th>
+        <th style="width: 16%">
+          Phone Number
+          <p-columnFilter
+            type="text"
+            field="phoneNumber"
+            display="menu"
+            placeholder="Filter by Phone Number"
+          ></p-columnFilter>
+        </th>
+        <th style="width: 16%">
+          Email
           <p-columnFilter
             type="text"
             field="email"
+            display="menu"
             placeholder="Filter by Email"
           ></p-columnFilter>
         </th>
-        <th>Birthdate</th>
-        <th>
+        <th style="width: 10%">
+          Birthdate
+          <p-columnFilter
+            type="date"
+            field="birthdate"
+            display="menu"
+            placeholder="Filter by Birthdate"
+          ></p-columnFilter>
+        </th>
+        <th style="width: 12%">
+          Role
           <p-columnFilter
             field="role"
             matchMode="equals"
+            display="menu"
             placeholder="Filter by Role"
           >
             <ng-template pTemplate="filter" let-filter="filterCallback">
@@ -71,6 +109,7 @@
                 [options]="roles"
                 [(ngModel)]="selectedRoles"
                 placeholder="Select Roles"
+                [style]="{ 'min-width': '12rem', width: '100%' }"
                 (onChange)="filter($event.value)"
               ></p-multiSelect>
             </ng-template>
@@ -90,6 +129,13 @@
         <td>{{ user.email }}</td>
         <td>{{ user.birthdate | date }}</td>
         <td>{{ user.role }}</td>
+      </tr>
+    </ng-template>
+
+    <!-- Empty Table Message -->
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="8" class="text-center">No users found.</td>
       </tr>
     </ng-template>
   </p-table>
