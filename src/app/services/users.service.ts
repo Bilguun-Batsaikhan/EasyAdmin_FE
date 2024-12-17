@@ -19,13 +19,15 @@ export class UsersService {
 
   getUsers(
     page: number = 0,
-    pageSize: number = 10
+    pageSize: number = 10,
+    filters?: { username?: string }
   ): Observable<{ data: User[]; totalElements: number; totalPages: number }> {
-    // const headers = new HttpHeaders({
-    //   Authorization: `Bearer ${accessToken}`,
-    // });
+    let requestUrl = `${this.baseUrl}${this.urlUsers}?page=${page}&pageSize=${pageSize}`;
 
-    const requestUrl = `${this.baseUrl}${this.urlUsers}?page=${page}&pageSize=${pageSize}`;
+    if (filters?.username) {
+      requestUrl += `&username=${encodeURIComponent(filters.username)}`;
+    }
+
     console.log('Request URL:', requestUrl);
 
     return this.http.get<any>(requestUrl).pipe(
