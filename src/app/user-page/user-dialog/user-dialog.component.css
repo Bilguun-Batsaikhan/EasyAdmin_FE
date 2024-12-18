@@ -1,0 +1,6 @@
+:host ::ng-deep .fixed-dropdown .p-dropdown-label {
+  width: 10.813rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

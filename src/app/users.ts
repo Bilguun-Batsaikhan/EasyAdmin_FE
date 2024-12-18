@@ -1,13 +1,14 @@
 import { userRoleEnum } from './userRoleEnum';
 
 export interface User {
-  id: number;
+  id?: number;
+  username: string;
+  password?: string;
+  email: string;
+  phoneNumber: string;
+  role: userRoleEnum;
   firstname: string;
   surname: string;
-  username: string;
-  phoneNumber: string;
-  email: string;
-  role: userRoleEnum;
-  birthdate: Date;
-  age: number;
+  birthdate: Date | null;
+  age?: number;
 }

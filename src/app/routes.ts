@@ -11,6 +11,11 @@ const routeConfig: Routes = [
     title: 'Login Page',
   },
   {
+    path: '',
+    component: HomeComponent,
+    title: 'Home Page',
+  },
+  {
     path: 'home',
     component: HomeComponent,
     title: 'Home Page',
