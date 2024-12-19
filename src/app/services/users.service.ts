@@ -19,15 +19,28 @@ export class UsersService {
 
   getUsers(
     page: number = 0,
-    pageSize: number = 10
+    pageSize: number = 10,
+    filters?: { [key: string]: any }
   ): Observable<{ data: User[]; totalElements: number; totalPages: number }> {
-    // const headers = new HttpHeaders({
-    //   Authorization: `Bearer ${accessToken}`,
-    // });
+    // Base query parameters for pagination
+    let queryParams = `page=${page}&pageSize=${pageSize}`;
 
-    const requestUrl = `${this.baseUrl}${this.urlUsers}?page=${page}&pageSize=${pageSize}`;
+    // Append filters dynamically to the query parameters
+    if (filters) {
+      for (const key in filters) {
+        if (filters[key] !== undefined && filters[key] !== null) {
+          const value = encodeURIComponent(filters[key]);
+          const firstLetterLowerKey =
+            key.charAt(0).toLowerCase() + key.slice(1);
+          queryParams += `&${firstLetterLowerKey}=${value}`;
+        }
+      }
+    }
+
+    const requestUrl = `${this.baseUrl}${this.urlUsers}?${queryParams}`;
     console.log('Request URL:', requestUrl);
 
+    // Make the HTTP GET request and map the response
     return this.http.get<any>(requestUrl).pipe(
       map((response) => ({
         data: response.data,
@@ -36,6 +49,34 @@ export class UsersService {
       })),
       catchError(this.handleError)
     );
+  }
+
+  postUser(user: User): Observable<string> {
+    const headers = new HttpHeaders().set('Content-Type', 'application/json');
+    return this.http
+      .post(`${this.baseUrl}${this.urlUsers}`, user, {
+        headers,
+        responseType: 'text',
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  patchUser(user: User): Observable<string> {
+    const headers = new HttpHeaders().set('Content-Type', 'application/json');
+    const patchReqUrl = `${this.baseUrl}${this.urlUsers}/${user.id}`;
+    return this.http
+      .patch(patchReqUrl, user, {
+        headers,
+        responseType: 'text',
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  deleteUser(id: number): Observable<string> {
+    const deleteReqUrl = `${this.baseUrl}${this.urlUsers}/${id}`;
+    return this.http
+      .delete(deleteReqUrl, { responseType: 'text' })
+      .pipe(catchError(this.handleError));
   }
 
   private handleError(error: HttpErrorResponse) {

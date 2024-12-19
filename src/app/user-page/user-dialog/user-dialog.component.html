@@ -1,0 +1,95 @@
+<p-dialog
+  header="Insert User"
+  [modal]="true"
+  [(visible)]="visible"
+  [style]="{ width: '40rem' }"
+  (onHide)="onCancel()"
+>
+  <span class="p-text-secondary block mb-5">
+    Provide necessary information
+  </span>
+  <div class="flex flex-wrap justify-content-center gap-4">
+    <div class="card flex justify-content-center">
+      <p-floatLabel>
+        <input
+          pInputText
+          id="new-username"
+          [(ngModel)]="userToBeInserted.username"
+          autocomplete="new-username"
+        />
+        <label for="new-username">Username</label>
+      </p-floatLabel>
+    </div>
+    <div class="card flex justify-content-center">
+      <p-floatLabel>
+        <p-password
+          id="new-password"
+          [(ngModel)]="userToBeInserted.password"
+          [feedback]="false"
+          autocomplete="new-password"
+        />
+        <label for="email">Password</label>
+      </p-floatLabel>
+    </div>
+    <div class="card flex justify-content-center">
+      <p-floatLabel>
+        <input
+          pInputText
+          id="firstname"
+          [(ngModel)]="userToBeInserted.firstname"
+        />
+        <label for="firstname">First Name</label>
+      </p-floatLabel>
+    </div>
+    <div class="card flex justify-content-center">
+      <p-floatLabel>
+        <input pInputText id="surname" [(ngModel)]="userToBeInserted.surname" />
+        <label for="surname">Surname</label>
+      </p-floatLabel>
+    </div>
+
+    <div class="card flex justify-content-center">
+      <p-dropdown
+        class="fixed-dropdown"
+        [options]="roles"
+        [(ngModel)]="userToBeInserted.role"
+        [checkmark]="true"
+        [showClear]="true"
+        optionLabel="role"
+        placeholder="Select a Role"
+      />
+    </div>
+    <div class="card flex justify-content-center">
+      <p-floatLabel>
+        <input pInputText id="email" [(ngModel)]="userToBeInserted.email" />
+        <label for="email">Email</label>
+      </p-floatLabel>
+    </div>
+    <div class="card flex justify-content-center">
+      <p-floatLabel>
+        <p-calendar
+          inputId="birth_date"
+          [(ngModel)]="userToBeInserted.birthdate"
+          dateFormat="dd.mm.yy"
+          appendTo="body"
+        />
+        <label for="birth_date">Birth Date</label>
+      </p-floatLabel>
+    </div>
+    <div class="card flex justify-content-center">
+      <p-floatLabel>
+        <p-inputMask
+          mask="999-99-99-999"
+          slotChar=" "
+          [(ngModel)]="userToBeInserted.phoneNumber"
+        >
+        </p-inputMask>
+        <label for="phoneNumber">Phone Number</label>
+      </p-floatLabel>
+    </div>
+    <div class="card flex justify-content-center gap-2">
+      <p-button label="Cancel" severity="secondary" (onClick)="onCancel()" />
+      <p-button label="Save" (onClick)="onSave()" />
+    </div>
+  </div>
+</p-dialog>

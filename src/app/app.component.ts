@@ -3,6 +3,9 @@ import { RouterOutlet } from '@angular/router';
 import { FormContainerComponent } from './login-page/form-container/form-container.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+//import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
@@ -12,6 +15,7 @@ import { RouterModule } from '@angular/router';
     FormContainerComponent,
     ReactiveFormsModule,
     RouterModule,
+    //CommonModule,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
