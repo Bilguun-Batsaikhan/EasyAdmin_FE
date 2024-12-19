@@ -48,12 +48,31 @@ import { UserDialogComponent } from '../user-dialog/user-dialog.component';
   providers: [UsersService, ConfirmationService, MessageService],
 })
 export class UserTableComponent implements OnInit {
+  // Inject the UsersService, ConfirmationService, and MessageService
   constructor(
     private usersService: UsersService,
     private confirmationService: ConfirmationService,
     private messageService: MessageService
   ) {}
 
+  pageNo: number = 0;
+  pageSize: number = 10;
+  totalElements: number = 0;
+  totalPages: number = 0;
+
+  usernameFilter: string = '';
+
+  visible: boolean = false;
+  editMode: boolean = false;
+
+  roles = [
+    { label: 'SUPER_ADMIN', value: 'super_admin' },
+    { label: 'USER', value: 'user' },
+    { label: 'SYSTEM_ADMIN', value: 'system_admin' },
+  ];
+
+  selectedRoles: any[] = [];
+  activeFilters: { field: string; value: any }[] = [];
   selectedSize: { class: string } = { class: 'default-class' };
   users: User[] = [];
 
@@ -68,40 +87,27 @@ export class UserTableComponent implements OnInit {
     birthdate: null,
   };
 
-  pageNo: number = 0;
-  pageSize: number = 10;
-  totalElements: number = 0;
-  totalPages: number = 0;
-  loading: boolean = true;
-  usernameFilter: string = '';
-  searchValue: string = '';
-  visible: boolean = false;
-  editMode: boolean = false;
-
-  roles = [
-    { label: 'SUPER_ADMIN', value: 'super_admin' },
-    { label: 'USER', value: 'user' },
-    { label: 'SYSTEM_ADMIN', value: 'system_admin' },
-  ];
-  selectedRoles: any[] = [];
-
-  ngOnInit(): void {
-    this.loading = false;
-  }
+  ngOnInit(): void {}
 
   clear(table: Table) {
     table.clear();
-    this.searchValue = '';
+    this.activeFilters = [];
+  }
+
+  isArray(value: any): boolean {
+    return Array.isArray(value);
   }
 
   showDialog(user: any = null): void {
     if (user) {
       this.editMode = true;
+      //The ... operator in the code snippet is the spread operator. It is used to create a shallow copy of the user object.
       this.userToBeInserted = { ...user };
     } else {
       this.editMode = false;
       this.resetUserForm();
     }
+    // Open the dialog
     this.visible = true;
   }
 
@@ -117,13 +123,27 @@ export class UserTableComponent implements OnInit {
       birthdate: null,
     };
   }
+  /* Here is the example event.filters object that is passed to the loadUsers method when the user applies a filter:
+  const event = {
+  filters: {
+    name: [
+      { value: 'John', matchMode: 'contains' }
+    ],
+    age: [
+      { value: 30, matchMode: 'equals' }
+    ],
+    birthdate: [
+      { value: new Date('1990-01-01'), matchMode: 'equals' }
+    ]
+  },
+  first: 0,
+  rows: 10
+};*/
 
   loadUsers(filters?: { [key: string]: any }): void {
-    this.loading = true;
-
     this.usersService.getUsers(this.pageNo, this.pageSize, filters).subscribe(
       (response) => {
-        this.users = response.data;
+        this.users = response.data; //response is an object with data, totalElements, and totalPages properties. Check back end and look for UserResPagination class
         this.totalElements = response.totalElements;
         this.totalPages = response.totalPages;
 
@@ -131,12 +151,9 @@ export class UserTableComponent implements OnInit {
         this.users.forEach(
           (user) => (user.birthdate = new Date(<Date>user.birthdate))
         );
-
-        this.loading = false;
       },
       (error) => {
         console.error('There was an error!', error);
-        this.loading = false;
       }
     );
   }
@@ -144,7 +161,14 @@ export class UserTableComponent implements OnInit {
   getInputValue(event: Event): string {
     return (event.target as HTMLInputElement).value || '';
   }
+  formatDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = ('0' + (date.getMonth() + 1)).slice(-2);
+    const day = ('0' + date.getDate()).slice(-2);
+    return `${year}-${month}-${day}`;
+  }
 
+  // Every time the user changes the page or the number of rows, this method is called
   onPageChange(event: any): void {
     this.pageNo = event.first / event.rows;
     this.pageSize = event.rows;
@@ -155,10 +179,18 @@ export class UserTableComponent implements OnInit {
     for (const field in event.filters) {
       if (event.filters[field]) {
         // fields are defined in <p-columnFilter> as an object with the field name as the key
+        /*
+        for name field
+        name: [
+        this is the filter meta object
+      { value: 'John', matchMode: 'contains' }
+    ]*/
         const filterMeta = event.filters[field][0]; // Access the first filter meta
-        const filterValue = filterMeta.value;
+        let filterValue = filterMeta.value;
         const matchMode = filterMeta.matchMode;
-
+        if (field === 'birthdate' && filterValue instanceof Date) {
+          filterValue = this.formatDate(filterValue);
+        }
         // Only add the filter to the filters object if a value is present
         if (filterValue !== undefined && filterValue !== null) {
           filters[field] = filterValue; // Store the filter value
@@ -176,20 +208,28 @@ export class UserTableComponent implements OnInit {
     this.loadUsers(filters);
   }
 
-  deleteUserRow(event: Event) {
-    console.log('delete button clicked');
+  deleteUserRow(event: Event, userId: any): void {
+    console.log('Delete button clicked');
     this.confirmationService.confirm({
       target: event.target as EventTarget,
       message: 'Do you want to delete this record?',
       icon: 'pi pi-info-circle',
-      //acceptButtonStyleClass: 'p-button-danger p-button-sm',
       accept: () => {
-        this.messageService.add({
-          severity: 'info',
-          summary: 'Confirmed',
-          detail: 'Record deleted',
-          life: 3000,
-        });
+        this.usersService.deleteUser(userId).subscribe(
+          (response: string) => {
+            this.removeTableRow(userId); // Remove the user from the table
+            this.successMessage(response); // Show success message
+            this.messageService.add({
+              severity: 'info',
+              summary: 'Confirmed',
+              detail: 'Record deleted',
+              life: 3000,
+            });
+          },
+          (error) => {
+            this.errorMessage(error);
+          }
+        );
       },
       reject: () => {
         this.messageService.add({
@@ -202,11 +242,108 @@ export class UserTableComponent implements OnInit {
     });
   }
 
+  removeTableRow(userId: any): void {
+    this.users = this.users.filter((user) => user.id !== userId);
+  }
+
+  convertUserForServer(user: any): any {
+    const formattedUser = {
+      ...user,
+      role: user.role.role,
+      birthdate: this.formatDate(new Date(user.birthdate)),
+    };
+
+    // Filter out properties with undefined or null values
+    const filteredUser = Object.keys(formattedUser).reduce(
+      (acc: { [key: string]: any }, key: string) => {
+        if (formattedUser[key] !== undefined && formattedUser[key] !== null) {
+          acc[key] = formattedUser[key];
+        }
+        return acc;
+      },
+      {}
+    );
+
+    return filteredUser;
+  }
+
   onSave(user: any, edit: boolean): void {
+    const convertedUser = this.convertUserForServer(user);
+
     if (edit) {
-      console.log('Edit user:', user);
+      console.log('Edit user:', convertedUser);
+      this.usersService.patchUser(convertedUser).subscribe(
+        (response: string) => {
+          this.updateTableRow(convertedUser); // Update the specific row in the table
+          this.successMessage(response);
+          this.visible = false; // Close the dialog
+        },
+        (error) => {
+          this.errorMessage(error);
+        }
+      );
     } else {
-      console.log('Save user:', user);
+      console.log('Save user:', convertedUser);
+      this.usersService.postUser(convertedUser).subscribe(
+        (response: string) => {
+          this.addTableRow(convertedUser); // Add a new row to the table
+          this.successMessage(response);
+          this.visible = false; // Close the dialog
+        },
+        (error) => {
+          this.errorMessage(error);
+        }
+      );
     }
+  }
+
+  updateTableRow(updatedUser: any): void {
+    const index = this.users.findIndex((user) => user.id === updatedUser.id);
+    if (index !== -1) {
+      this.users[index] = { ...updatedUser };
+    }
+  }
+
+  addTableRow(newUser: any): void {
+    this.users.push(newUser);
+  }
+
+  successMessage(message: string): void {
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Success',
+      detail: message,
+      life: 3000,
+    });
+  }
+  errorMessage(message: string): void {
+    this.messageService.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: message,
+      life: 3000,
+    });
+  }
+
+  onFilterApplied(event: any): void {
+    this.activeFilters = [];
+    const filters = event.filters;
+
+    Object.keys(filters).forEach((field) => {
+      const filterArray = filters[field]; // Each filter field contains an array
+      if (filterArray?.length) {
+        const filterValue = filterArray[0]?.value; // Accessing the actual value of the filter
+        if (filterValue) {
+          // Check if the filter value is an object (for example, a date or an array)
+          const valueToDisplay =
+            filterValue instanceof Object
+              ? JSON.stringify(filterValue)
+              : filterValue;
+          this.activeFilters.push({ field, value: valueToDisplay });
+        }
+      }
+    });
+
+    console.log('Active Filters:', this.activeFilters);
   }
 }

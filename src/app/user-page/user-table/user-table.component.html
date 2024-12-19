@@ -9,7 +9,7 @@
     [paginator]="true"
     [rows]="pageSize"
     [rowsPerPageOptions]="[10, 25, 50]"
-    [loading]="loading"
+    styleClass="p-datatable-gridlines"
     [globalFilterFields]="[
       'firstname',
       'surname',
@@ -26,8 +26,9 @@
       'table-layout': 'fixed'
     }"
     (onLazyLoad)="onPageChange($event)"
+    (onFilter)="onFilterApplied($event)"
   >
-    <!-- Caption with Search -->
+    <!-- Caption  -->
     <ng-template pTemplate="caption">
       <div class="grid">
         <div class="col-6 flex flex-row">
@@ -40,15 +41,20 @@
             (click)="clear(dt2)"
           />
         </div>
-        <div class="col-6 flex justify-content-end align-items-center">
-          <span class="pi pi-search mr-2"></span>
-          <input
-            type="text"
-            pInputText
-            placeholder="Search keyword"
-            [(ngModel)]="searchValue"
-            (input)="dt2.filterGlobal(getInputValue($event), 'contains')"
-          />
+        <div class="col-6 text-right">
+          <ng-container *ngIf="activeFilters.length > 0">
+            <span class="p-text-secondary">
+              <strong>Active Filters:</strong>
+              <span *ngFor="let filter of activeFilters; let i = index">
+                {{ filter.field | titlecase }}:
+                <span *ngIf="isArray(filter.value)">{{
+                  filter.value.join(", ")
+                }}</span>
+                <span *ngIf="!isArray(filter.value)">{{ filter.value }}</span>
+                <span *ngIf="i < activeFilters.length - 1">|</span>
+              </span>
+            </span>
+          </ng-container>
         </div>
       </div>
 
@@ -63,8 +69,8 @@
     <!-- Table Header with Pop-Up Filters -->
     <ng-template pTemplate="header">
       <tr>
-        <th style="width: 5%" class="px-2">ID</th>
-        <th style="width: 10%" class="px-0">
+        <th style="width: 5%" class="px-2 text-center">ID</th>
+        <th style="width: 10%" class="px-0 text-center">
           First Name
           <p-columnFilter
             type="text"
@@ -75,7 +81,7 @@
             [showAddButton]="false"
           ></p-columnFilter>
         </th>
-        <th style="width: 10%" class="px-0">
+        <th style="width: 10%" class="px-0 text-center">
           Surname
           <p-columnFilter
             type="text"
@@ -86,7 +92,7 @@
             [showAddButton]="false"
           ></p-columnFilter>
         </th>
-        <th style="width: 12%" class="px-0">
+        <th style="width: 12%" class="px-0 text-center">
           Username
           <p-columnFilter
             type="text"
@@ -97,7 +103,7 @@
             [showAddButton]="false"
           ></p-columnFilter>
         </th>
-        <th style="width: 14%" class="px-0">
+        <th style="width: 14%" class="px-0 text-center">
           Phone Number
           <p-columnFilter
             type="text"
@@ -108,7 +114,7 @@
             [showAddButton]="false"
           ></p-columnFilter>
         </th>
-        <th style="width: 16%" class="px-0">
+        <th style="width: 16%" class="px-0 text-center">
           Email
           <p-columnFilter
             type="text"
@@ -119,7 +125,7 @@
             [showAddButton]="false"
           ></p-columnFilter>
         </th>
-        <th style="width: 12%" class="px-0">
+        <th style="width: 12%" class="px-0 text-center">
           Birthdate
           <p-columnFilter
             type="date"
@@ -128,9 +134,10 @@
             placeholder="Filter by Birthdate"
             [showOperator]="false"
             [showAddButton]="false"
+            [showApplyButton]="false"
           ></p-columnFilter>
         </th>
-        <th style="width: 12%" class="px-0">
+        <th style="width: 12%" class="px-0 text-center">
           Role
           <p-columnFilter
             field="role"
@@ -139,6 +146,7 @@
             placeholder="Filter by Role"
             [showOperator]="false"
             [showAddButton]="false"
+            [showMatchModes]="false"
           >
             <ng-template pTemplate="filter" let-filter="filterCallback">
               <p-multiSelect
@@ -159,13 +167,13 @@
     <!-- Table Body -->
     <ng-template pTemplate="body" let-user>
       <tr class="text-center">
-        <td class="px-2">{{ user.id }}</td>
-        <td class="px-0">{{ user.firstname }}</td>
-        <td class="px-0">{{ user.surname }}</td>
-        <td class="px-0">{{ user.username }}</td>
-        <td class="px-0">{{ user.phoneNumber }}</td>
+        <td class="text-center">{{ user.id }}</td>
+        <td class="text-center">{{ user.firstname }}</td>
+        <td class="text-center">{{ user.surname }}</td>
+        <td class="text-center">{{ user.username }}</td>
+        <td class="text-center">{{ user.phoneNumber }}</td>
         <td
-          class="px-0"
+          class="text-center"
           style="
             word-wrap: break-word;
             white-space: normal;
@@ -174,27 +182,31 @@
         >
           {{ user.email }}
         </td>
-        <td class="px-0">{{ user.birthdate | date }}</td>
-        <td class="px-0">{{ user.role }}</td>
+        <td class="text-center">{{ user.birthdate | date }}</td>
+        <td class="text-center">{{ user.role }}</td>
         <td>
-          <p-button
-            icon="pi pi-trash"
-            [rounded]="true"
-            text="Delete"
-            severity="danger"
-            aria-label="Delete"
-            (click)="deleteUserRow($event)"
-          />
+          <div class="flex justify-content-center">
+            <p-button
+              [rounded]="true"
+              (onClick)="showDialog(user)"
+              text="Edit"
+              icon="pi pi-pencil"
+              severity="info"
+              aria-label="edit"
+            />
+          </div>
         </td>
-        <td class="px-2">
-          <p-button
-            [rounded]="true"
-            (onClick)="showDialog(user)"
-            text="Edit"
-            icon="pi pi-pencil"
-            severity="info"
-            aria-label="edit"
-          />
+        <td>
+          <div class="flex justify-content-center">
+            <p-button
+              icon="pi pi-trash"
+              [rounded]="true"
+              text="Delete"
+              severity="danger"
+              aria-label="Delete"
+              (click)="deleteUserRow($event, user.id)"
+            />
+          </div>
         </td>
       </tr>
     </ng-template>

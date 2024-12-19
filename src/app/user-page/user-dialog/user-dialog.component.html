@@ -78,12 +78,11 @@
     </div>
     <div class="card flex justify-content-center">
       <p-floatLabel>
-        <p-inputMask mask="999-99-99-999" slot="input">
-          <input
-            pInputText
-            id="phoneNumber"
-            [(ngModel)]="userToBeInserted.phoneNumber"
-          />
+        <p-inputMask
+          mask="999-99-99-999"
+          slotChar=" "
+          [(ngModel)]="userToBeInserted.phoneNumber"
+        >
         </p-inputMask>
         <label for="phoneNumber">Phone Number</label>
       </p-floatLabel>

@@ -51,6 +51,34 @@ export class UsersService {
     );
   }
 
+  postUser(user: User): Observable<string> {
+    const headers = new HttpHeaders().set('Content-Type', 'application/json');
+    return this.http
+      .post(`${this.baseUrl}${this.urlUsers}`, user, {
+        headers,
+        responseType: 'text',
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  patchUser(user: User): Observable<string> {
+    const headers = new HttpHeaders().set('Content-Type', 'application/json');
+    const patchReqUrl = `${this.baseUrl}${this.urlUsers}/${user.id}`;
+    return this.http
+      .patch(patchReqUrl, user, {
+        headers,
+        responseType: 'text',
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  deleteUser(id: number): Observable<string> {
+    const deleteReqUrl = `${this.baseUrl}${this.urlUsers}/${id}`;
+    return this.http
+      .delete(deleteReqUrl, { responseType: 'text' })
+      .pipe(catchError(this.handleError));
+  }
+
   private handleError(error: HttpErrorResponse) {
     if (error.error instanceof ErrorEvent) {
       console.error('An error occurred:', error.error.message);
