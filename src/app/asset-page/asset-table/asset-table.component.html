@@ -106,7 +106,19 @@
             placeholder="Filter by Status"
             [showOperator]="false"
             [showAddButton]="false"
-          ></p-columnFilter>
+            [showMatchModes]="false"
+            [showApplyButton]="false"
+          >
+            <ng-template pTemplate="filter" let-filter="filterCallback">
+              <p-multiSelect
+                [options]="statusOptions"
+                [(ngModel)]="selectedStatus"
+                placeholder="Select Status"
+                [style]="{ 'min-width': '12rem', width: '100%' }"
+                (onChange)="filter($event.value)"
+              ></p-multiSelect>
+            </ng-template>
+          </p-columnFilter>
         </th>
         <th style="width: 15%" class="px-0 text-center">
           Cost

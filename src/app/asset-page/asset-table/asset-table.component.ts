@@ -66,11 +66,11 @@ export class AssetTableComponent {
   editMode: boolean = false;
   // Asset status options
   statusOptions = [
-    { label: 'AVAILABLE', value: 'available' },
-    { label: 'UNAVAILABLE', value: 'unavailable' },
-    { label: 'ASSIGNED', value: 'assigned' },
+    { label: 'AVAILABLE', value: 'AVAILABLE' },
+    { label: 'UNAVAILABLE', value: 'UNAVAILABLE' },
+    { label: 'ASSIGNED', value: 'ASSGINED' },
   ];
-  selectedStatus: string = 'available';
+  selectedStatus: string[] = [];
   activeFilters: { field: string; value: any }[] = [];
   // Table properties
   assets: Asset[] = [];

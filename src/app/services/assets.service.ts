@@ -61,8 +61,12 @@ export class AssetsService {
   patchAsset(asset: Asset): Observable<string> {
     const headers = new HttpHeaders().set('Content-Type', 'application/json');
     const patchReqUrl = `${this.baseUrl}${this.urlAssets}/${asset.id}`;
+
+    // Create a copy of the asset object without the id field
+    const { id, ...assetWithoutId } = asset;
+
     return this.http
-      .patch(patchReqUrl, asset, {
+      .patch(patchReqUrl, assetWithoutId, {
         headers,
         responseType: 'text',
       })
