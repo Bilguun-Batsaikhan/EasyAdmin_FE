@@ -44,9 +44,6 @@ export class ReactiveFormComponent {
 
   onSubmit() {
     if (this.loginForm.valid) {
-      console.log('Email:', this.loginForm.value.email);
-      console.log('Password:', this.loginForm.value.password);
-
       const email = this.loginForm.value.email;
       const password = this.loginForm.value.password;
       this.authService.login(email, password).subscribe(

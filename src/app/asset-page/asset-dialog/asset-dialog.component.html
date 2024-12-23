@@ -1,0 +1,62 @@
+<p-dialog
+  header="Insert Asset"
+  [modal]="true"
+  [(visible)]="visible"
+  [style]="{ width: '25rem' }"
+  (onHide)="onCancel()"
+>
+  <span *ngIf="formSubmitted && form.invalid" class="block mb-5 error-message">
+    All fields must be filled
+  </span>
+
+  <form [formGroup]="form" (ngSubmit)="onSave()">
+    <div class="flex flex-wrap justify-content-center gap-4">
+      <div class="card flex justify-content-center">
+        <p-floatLabel>
+          <input
+            pInputText
+            id="model-name"
+            formControlName="modelName"
+            autocomplete="model-name"
+          />
+          <label for="model-name"
+            ><span class="required">*</span> Model Name</label
+          >
+        </p-floatLabel>
+      </div>
+      <div class="card flex justify-content-center">
+        <p-floatLabel>
+          <input pInputText id="type" formControlName="type" />
+          <label for="type"><span class="required">*</span> Type</label>
+        </p-floatLabel>
+      </div>
+      <div class="card flex justify-content-center">
+        <p-dropdown
+          class="fixed-dropdown"
+          [options]="assetStatuses"
+          formControlName="status"
+          [checkmark]="true"
+          [showClear]="true"
+          optionLabel="name"
+          placeholder="Select a Status"
+        ></p-dropdown>
+      </div>
+      <div class="card flex justify-content-center">
+        <p-floatLabel>
+          <input pInputText id="cost" formControlName="cost" />
+          <label for="cost"><span class="required">*</span> Cost</label>
+        </p-floatLabel>
+      </div>
+      <div class="card flex justify-content-center">
+        <p-floatLabel>
+          <input pInputText id="user-id" formControlName="userID" />
+          <label for="user-id">User ID</label>
+        </p-floatLabel>
+      </div>
+      <div class="card flex justify-content-center gap-2">
+        <p-button label="Cancel" severity="secondary" (onClick)="onCancel()" />
+        <p-button label="Save" type="submit" />
+      </div>
+    </div>
+  </form>
+</p-dialog>

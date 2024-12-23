@@ -4,7 +4,7 @@
   <p-confirmPopup />
   <p-table
     #dt2
-    [value]="users"
+    [value]="assets"
     dataKey="id"
     [paginator]="true"
     [rows]="pageSize"
@@ -14,7 +14,8 @@
     [totalRecords]="totalElements"
     [tableStyle]="{
       'min-width': '75rem',
-      'table-layout': 'fixed'
+      'table-layout': 'fixed',
+      width: '100%'
     }"
     (onLazyLoad)="onPageChange($event)"
     (onFilter)="onFilterApplied($event)"
@@ -23,7 +24,7 @@
     <ng-template pTemplate="caption">
       <div class="grid">
         <div class="col-6 flex flex-row">
-          <p-button (onClick)="showDialog()" label="Add User" class="mx-2" />
+          <p-button (onClick)="showDialog()" label="Add Asset" class="mx-2" />
           <p-button
             class="mx-2"
             label="Clear"
@@ -51,92 +52,58 @@
         </div>
       </div>
 
-      <app-user-dialog
+      <app-asset-dialog
         [(visible)]="visible"
         [editMode]="editMode"
-        [userToBeInserted]="userToBeInserted"
-        (save)="onSave($event.user, $event.editMode)"
-      ></app-user-dialog>
+        [assetToBeInserted]="assetToBeinserted"
+        (save)="onSave($event.asset, $event.editMode)"
+      ></app-asset-dialog>
     </ng-template>
 
     <!-- Table Header with Pop-Up Filters -->
     <ng-template pTemplate="header">
       <tr>
         <th style="width: 5%" class="px-2 text-center">ID</th>
-        <th style="width: 10%" class="px-0 text-center">
-          First Name
+        <th style="width: 8%" class="px-0 text-center">
+          User ID
+          <p-columnFilter
+            type="numeric"
+            field="userID"
+            display="menu"
+            placeholder="Filter by User ID"
+            [showOperator]="false"
+            [showAddButton]="false"
+          ></p-columnFilter>
+        </th>
+        <th style="width: 15%" class="px-0 text-center">
+          Model Name
           <p-columnFilter
             type="text"
-            field="firstname"
+            field="modelName"
             display="menu"
-            placeholder="Filter by First Name"
+            placeholder="Filter by Model Name"
             [showOperator]="false"
             [showAddButton]="false"
           ></p-columnFilter>
         </th>
-        <th style="width: 10%" class="px-0 text-center">
-          Surname
+        <th style="width: 15%" class="px-0 text-center">
+          Type
           <p-columnFilter
             type="text"
-            field="surname"
+            field="type"
             display="menu"
-            placeholder="Filter by Surname"
+            placeholder="Filter by Type"
             [showOperator]="false"
             [showAddButton]="false"
           ></p-columnFilter>
         </th>
-        <th style="width: 12%" class="px-0 text-center">
-          Username
+        <th style="width: 15%" class="px-0 text-center">
+          Status
           <p-columnFilter
             type="text"
-            field="username"
+            field="status"
             display="menu"
-            placeholder="Filter by Username"
-            [showOperator]="false"
-            [showAddButton]="false"
-          ></p-columnFilter>
-        </th>
-        <th style="width: 14%" class="px-0 text-center">
-          Phone Number
-          <p-columnFilter
-            type="text"
-            field="phoneNumber"
-            display="menu"
-            placeholder="Filter by Phone Number"
-            [showOperator]="false"
-            [showAddButton]="false"
-          ></p-columnFilter>
-        </th>
-        <th style="width: 16%" class="px-0 text-center">
-          Email
-          <p-columnFilter
-            type="text"
-            field="email"
-            display="menu"
-            placeholder="Filter by Email"
-            [showOperator]="false"
-            [showAddButton]="false"
-          ></p-columnFilter>
-        </th>
-        <th style="width: 12%" class="px-0 text-center">
-          Birthdate
-          <p-columnFilter
-            type="date"
-            field="birthdate"
-            display="menu"
-            placeholder="Filter by Birthdate"
-            [showOperator]="false"
-            [showAddButton]="false"
-            [showApplyButton]="false"
-          ></p-columnFilter>
-        </th>
-        <th style="width: 12%" class="px-0 text-center">
-          Role
-          <p-columnFilter
-            field="role"
-            matchMode="equals"
-            display="menu"
-            placeholder="Filter by Role"
+            placeholder="Filter by Status"
             [showOperator]="false"
             [showAddButton]="false"
             [showMatchModes]="false"
@@ -144,45 +111,46 @@
           >
             <ng-template pTemplate="filter" let-filter="filterCallback">
               <p-multiSelect
-                [options]="roles"
-                [(ngModel)]="selectedRoles"
-                placeholder="Select Roles"
+                [options]="statusOptions"
+                [(ngModel)]="selectedStatus"
+                placeholder="Select Status"
                 [style]="{ 'min-width': '12rem', width: '100%' }"
                 (onChange)="filter($event.value)"
               ></p-multiSelect>
             </ng-template>
           </p-columnFilter>
         </th>
+        <th style="width: 15%" class="px-0 text-center">
+          Cost
+          <p-columnFilter
+            type="numeric"
+            field="cost"
+            display="menu"
+            placeholder="Filter by Cost"
+            [showOperator]="false"
+            [showAddButton]="false"
+          ></p-columnFilter>
+        </th>
+
         <th style="width: 5%" class="px-0 text-center">Edit</th>
         <th style="width: 5%" class="px-0 text-center">Del</th>
       </tr>
     </ng-template>
 
     <!-- Table Body -->
-    <ng-template pTemplate="body" let-user>
+    <ng-template pTemplate="body" let-asset>
       <tr class="text-center">
-        <td class="text-center">{{ user.id }}</td>
-        <td class="text-center">{{ user.firstname }}</td>
-        <td class="text-center">{{ user.surname }}</td>
-        <td class="text-center">{{ user.username }}</td>
-        <td class="text-center">{{ user.phoneNumber }}</td>
-        <td
-          class="text-center"
-          style="
-            word-wrap: break-word;
-            white-space: normal;
-            overflow-wrap: break-word;
-          "
-        >
-          {{ user.email }}
-        </td>
-        <td class="text-center">{{ user.birthdate | date }}</td>
-        <td class="text-center">{{ user.role }}</td>
+        <td class="text-center">{{ asset.id }}</td>
+        <td class="text-center">{{ asset.userID }}</td>
+        <td class="text-center">{{ asset.modelName }}</td>
+        <td class="text-center">{{ asset.type }}</td>
+        <td class="text-center">{{ asset.status }}</td>
+        <td class="text-center">{{ asset.cost }}</td>
         <td>
           <div class="flex justify-content-center">
             <p-button
               [rounded]="true"
-              (onClick)="showDialog(user)"
+              (onClick)="showDialog(asset)"
               text="Edit"
               icon="pi pi-pencil"
               severity="info"
@@ -198,7 +166,7 @@
               text="Delete"
               severity="danger"
               aria-label="Delete"
-              (click)="deleteUserRow($event, user.id)"
+              (click)="deleteAssetRow($event, asset.id)"
             />
           </div>
         </td>
@@ -208,7 +176,7 @@
     <!-- Empty Table Message -->
     <ng-template pTemplate="emptymessage">
       <tr>
-        <td colspan="8" class="text-center">No users found.</td>
+        <td colspan="8" class="text-center">No assets found.</td>
       </tr>
     </ng-template>
   </p-table>

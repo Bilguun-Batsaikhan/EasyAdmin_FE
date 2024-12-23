@@ -1,22 +1,36 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  OnChanges,
+} from '@angular/core';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { DialogModule } from 'primeng/dialog';
 import { PasswordModule } from 'primeng/password';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { InputMaskModule } from 'primeng/inputmask';
-import { User } from '../../users';
-import { userRoleEnum } from '../../userRoleEnum';
+import { User } from '../../interfaces/users';
+import { userRoleEnum } from '../../enumeration/userRoleEnum';
 import { InputTextModule } from 'primeng/inputtext';
 import { DropdownModule } from 'primeng/dropdown';
 import { CalendarModule } from 'primeng/calendar';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-user-dialog',
   standalone: true,
   imports: [
     FormsModule,
+    ReactiveFormsModule,
     ButtonModule,
     ConfirmPopupModule,
     DialogModule,
@@ -26,11 +40,12 @@ import { CalendarModule } from 'primeng/calendar';
     InputTextModule,
     DropdownModule,
     CalendarModule,
+    CommonModule,
   ],
   templateUrl: './user-dialog.component.html',
-  styleUrl: './user-dialog.component.css',
+  styleUrls: ['./user-dialog.component.css'],
 })
-export class UserDialogComponent {
+export class UserDialogComponent implements OnChanges {
   @Input() visible: boolean = false;
   @Input() editMode: boolean = false;
   @Input() userToBeInserted: User = {
@@ -44,14 +59,36 @@ export class UserDialogComponent {
     birthdate: null,
   };
 
+  @Output() visibleChange = new EventEmitter<boolean>();
+  @Output() save = new EventEmitter<any>();
+
   roles = [
     { role: userRoleEnum.USER, name: 'User' },
     { role: userRoleEnum.SUPER_ADMIN, name: 'Super Admin' },
     { role: userRoleEnum.SYSTEM_ADMIN, name: 'System Admin' },
   ];
 
-  @Output() visibleChange = new EventEmitter<boolean>();
-  @Output() save = new EventEmitter<any>();
+  // Reactive form setup
+  form: FormGroup = new FormGroup({
+    username: new FormControl('', Validators.required),
+    password: new FormControl('', Validators.required),
+    email: new FormControl('', [Validators.required, Validators.email]),
+    phoneNumber: new FormControl('', Validators.required),
+    role: new FormControl(userRoleEnum.USER, Validators.required),
+    firstname: new FormControl('', Validators.required),
+    surname: new FormControl('', Validators.required),
+    birthdate: new FormControl(null, Validators.required),
+  });
+
+  formSubmitted: boolean = false;
+
+  ngOnChanges(): void {
+    if (this.editMode && this.userToBeInserted) {
+      this.form.patchValue(this.userToBeInserted);
+    } else {
+      this.resetUserForm();
+    }
+  }
 
   onCancel(): void {
     this.visible = false;
@@ -59,17 +96,21 @@ export class UserDialogComponent {
   }
 
   onSave(): void {
-    this.save.emit({ user: this.userToBeInserted, editMode: this.editMode });
-    this.visible = false;
-    this.visibleChange.emit(this.visible);
+    this.formSubmitted = true;
+    if (this.form.valid) {
+      this.save.emit({
+        user: { ...this.userToBeInserted, ...this.form.value },
+        editMode: this.editMode,
+      });
+      this.visible = false;
+      this.visibleChange.emit(this.visible);
+    } else {
+      this.form.markAllAsTouched();
+    }
   }
 
-  showDialog() {
-    this.resetUserForm();
-    this.visible = true;
-  }
   resetUserForm(): void {
-    this.userToBeInserted = {
+    this.form.reset({
       username: '',
       password: '',
       email: '',
@@ -78,6 +119,7 @@ export class UserDialogComponent {
       firstname: '',
       surname: '',
       birthdate: null,
-    };
+    });
+    this.formSubmitted = false;
   }
 }

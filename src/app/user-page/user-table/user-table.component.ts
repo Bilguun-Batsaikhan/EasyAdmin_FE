@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { User } from '../../users';
+import { User } from '../../interfaces/users';
 import { UsersService } from '../../services/users.service';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { CommonModule } from '@angular/common';
@@ -17,10 +17,11 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { DialogModule } from 'primeng/dialog';
 import { PasswordModule } from 'primeng/password';
-import { userRoleEnum } from '../../userRoleEnum';
+import { userRoleEnum } from '../../enumeration/userRoleEnum';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { InputMaskModule } from 'primeng/inputmask';
 import { UserDialogComponent } from '../user-dialog/user-dialog.component';
+import { CommonService } from '../../services/common.service';
 
 @Component({
   selector: 'app-user-table',
@@ -45,22 +46,21 @@ import { UserDialogComponent } from '../user-dialog/user-dialog.component';
     InputMaskModule,
     UserDialogComponent,
   ],
-  providers: [UsersService, ConfirmationService, MessageService],
+  providers: [UsersService, ConfirmationService, MessageService, CommonService],
 })
 export class UserTableComponent implements OnInit {
   // Inject the UsersService, ConfirmationService, and MessageService
   constructor(
     private usersService: UsersService,
     private confirmationService: ConfirmationService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    protected commonService: CommonService
   ) {}
 
   pageNo: number = 0;
   pageSize: number = 10;
   totalElements: number = 0;
   totalPages: number = 0;
-
-  usernameFilter: string = '';
 
   visible: boolean = false;
   editMode: boolean = false;
@@ -70,10 +70,10 @@ export class UserTableComponent implements OnInit {
     { label: 'USER', value: 'user' },
     { label: 'SYSTEM_ADMIN', value: 'system_admin' },
   ];
-
   selectedRoles: any[] = [];
+
   activeFilters: { field: string; value: any }[] = [];
-  selectedSize: { class: string } = { class: 'default-class' };
+
   users: User[] = [];
 
   userToBeInserted: User = {
@@ -217,8 +217,12 @@ export class UserTableComponent implements OnInit {
       accept: () => {
         this.usersService.deleteUser(userId).subscribe(
           (response: string) => {
-            this.removeTableRow(userId); // Remove the user from the table
-            this.successMessage(response); // Show success message
+            this.users = this.commonService.removeTableRow<User>(
+              userId as number,
+              this.users
+            );
+
+            this.commonService.successMessage(response); // Show success message
             this.messageService.add({
               severity: 'info',
               summary: 'Confirmed',
@@ -227,7 +231,7 @@ export class UserTableComponent implements OnInit {
             });
           },
           (error) => {
-            this.errorMessage(error);
+            this.commonService.errorMessage(error);
           }
         );
       },
@@ -275,11 +279,11 @@ export class UserTableComponent implements OnInit {
       this.usersService.patchUser(convertedUser).subscribe(
         (response: string) => {
           this.updateTableRow(convertedUser); // Update the specific row in the table
-          this.successMessage(response);
+          this.commonService.successMessage(response);
           this.visible = false; // Close the dialog
         },
         (error) => {
-          this.errorMessage(error);
+          this.commonService.errorMessage(error);
         }
       );
     } else {
@@ -287,11 +291,11 @@ export class UserTableComponent implements OnInit {
       this.usersService.postUser(convertedUser).subscribe(
         (response: string) => {
           this.addTableRow(convertedUser); // Add a new row to the table
-          this.successMessage(response);
+          this.commonService.successMessage(response);
           this.visible = false; // Close the dialog
         },
         (error) => {
-          this.errorMessage(error);
+          this.commonService.errorMessage(error);
         }
       );
     }
@@ -306,23 +310,6 @@ export class UserTableComponent implements OnInit {
 
   addTableRow(newUser: any): void {
     this.users.push(newUser);
-  }
-
-  successMessage(message: string): void {
-    this.messageService.add({
-      severity: 'success',
-      summary: 'Success',
-      detail: message,
-      life: 3000,
-    });
-  }
-  errorMessage(message: string): void {
-    this.messageService.add({
-      severity: 'error',
-      summary: 'Error',
-      detail: message,
-      life: 3000,
-    });
   }
 
   onFilterApplied(event: any): void {

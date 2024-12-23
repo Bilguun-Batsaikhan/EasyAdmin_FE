@@ -4,11 +4,3 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.error-message {
-  color: red;
-}
-
-.required {
-  color: red;
-  margin-right: 0.25rem;
-}
