@@ -5,21 +5,28 @@ import { MenuItem } from 'primeng/api';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-navigation-bar',
   standalone: true,
-  imports: [RouterModule, MenubarModule, InputTextModule, ButtonModule],
+  imports: [
+    RouterModule,
+    MenubarModule,
+    InputTextModule,
+    ButtonModule,
+    CommonModule,
+  ],
   templateUrl: './navigation-bar.component.html',
   styleUrls: ['./navigation-bar.component.css'],
 })
 export class NavigationBarComponent implements OnInit {
+  constructor(private authService: AuthService, private router: Router) {}
+
   menuItems: MenuItem[] | undefined;
-  router: Router = inject(Router);
   role = localStorage.getItem('role');
   ngOnInit() {
-    console.log('Role:', this.role);
-
     this.menuItems = [
       {
         label: 'Home',
@@ -54,9 +61,10 @@ export class NavigationBarComponent implements OnInit {
   }
 
   onSignOut() {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('role');
-    this.router.navigate(['/login']);
+    this.authService.logout();
+  }
+
+  isLoggedIn(): boolean {
+    return localStorage.length > 0;
   }
 }

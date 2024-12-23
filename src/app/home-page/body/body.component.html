@@ -11,9 +11,20 @@
         distinctio molestias labore soluta ducimus atque, culpa minus commodi
         dicta reprehenderit est, quis ipsam libero in quas quo modi animi?
       </p>
-      <a [routerLink]="['/login']" class="p-button p-button-primary px-5"
+      <!-- <a [routerLink]="['/login']" class="p-button p-button-primary px-5"
         >Sign in</a
-      >
+      > -->
+      <div class="card flex justify-content-start">
+        <p-button
+          [disabled]="isLoggedIn()"
+          [label]="isLoggedIn() ? 'Signed In' : 'Sign In'"
+          [routerLink]="isLoggedIn() ? null : ['/login']"
+          icon="pi pi-sign-in"
+          [text]="true"
+          [raised]="true"
+          [styleClass]="'w-8rem'"
+        ></p-button>
+      </div>
     </div>
   </div>
   <div class="col md:col-6 flex justify-content-center align-items-center">

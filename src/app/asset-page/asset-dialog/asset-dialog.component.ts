@@ -1,0 +1,110 @@
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  OnChanges,
+} from '@angular/core';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { ButtonModule } from 'primeng/button';
+import { ConfirmPopupModule } from 'primeng/confirmpopup';
+import { DialogModule } from 'primeng/dialog';
+import { InputTextModule } from 'primeng/inputtext';
+import { DropdownModule } from 'primeng/dropdown';
+import { CommonModule } from '@angular/common';
+import { Asset } from '../../interfaces/assets';
+import { AssetStatus } from '../../enumeration/AssetStatus';
+import { FloatLabelModule } from 'primeng/floatlabel';
+
+@Component({
+  selector: 'app-asset-dialog',
+  standalone: true,
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    ButtonModule,
+    ConfirmPopupModule,
+    DialogModule,
+    InputTextModule,
+    DropdownModule,
+    CommonModule,
+    FloatLabelModule,
+  ],
+  templateUrl: './asset-dialog.component.html',
+  styleUrls: ['./asset-dialog.component.css'],
+})
+export class AssetDialogComponent implements OnChanges {
+  @Input() visible: boolean = false;
+  @Input() editMode: boolean = false;
+  @Input() assetToBeInserted: Asset = {
+    modelName: '',
+    type: '',
+    status: AssetStatus.AVAILABLE,
+    cost: 0,
+    userID: 0,
+  };
+
+  @Output() visibleChange = new EventEmitter<boolean>();
+  @Output() save = new EventEmitter<any>();
+
+  assetStatuses = [
+    { status: AssetStatus.AVAILABLE, name: 'AVAILABLE' },
+    { status: AssetStatus.UNAVAILABLE, name: 'UNAVAILABLE' },
+    { status: AssetStatus.ASSIGNED, name: 'ASSIGNED' },
+  ];
+
+  // Reactive form setup
+  form: FormGroup = new FormGroup({
+    modelName: new FormControl('', Validators.required),
+    type: new FormControl('', Validators.required),
+    status: new FormControl(AssetStatus.AVAILABLE, Validators.required),
+    cost: new FormControl(0, Validators.required),
+    userID: new FormControl(null),
+  });
+
+  formSubmitted: boolean = false;
+
+  ngOnChanges(): void {
+    if (this.editMode && this.assetToBeInserted) {
+      this.form.patchValue(this.assetToBeInserted);
+    } else {
+      this.resetAssetForm();
+    }
+  }
+
+  onCancel(): void {
+    this.visible = false;
+    this.visibleChange.emit(this.visible);
+  }
+
+  onSave(): void {
+    this.formSubmitted = true;
+    if (this.form.valid) {
+      this.save.emit({
+        asset: { ...this.assetToBeInserted, ...this.form.value },
+        editMode: this.editMode,
+      });
+      this.visible = false;
+      this.visibleChange.emit(this.visible);
+    } else {
+      this.form.markAllAsTouched();
+    }
+  }
+
+  resetAssetForm(): void {
+    this.form.reset({
+      modelName: '',
+      type: '',
+      status: AssetStatus.AVAILABLE,
+      cost: 0,
+      userID: 0,
+    });
+    this.formSubmitted = false;
+  }
+}

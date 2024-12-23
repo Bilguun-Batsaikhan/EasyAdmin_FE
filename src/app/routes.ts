@@ -3,6 +3,7 @@ import { FormContainerComponent } from './login-page/form-container/form-contain
 import { HomeComponent } from './home-page/home/home.component';
 import { UsersComponent } from './user-page/users/users.component';
 import { authGuard } from './auth.guard';
+import { AssetsComponent } from './asset-page/assets/assets.component';
 
 const routeConfig: Routes = [
   {
@@ -24,6 +25,12 @@ const routeConfig: Routes = [
     path: 'users',
     component: UsersComponent,
     title: 'Users Page',
+    canActivate: [authGuard],
+  },
+  {
+    path: 'assets',
+    component: AssetsComponent,
+    title: 'Assets Page',
     canActivate: [authGuard],
   },
 ];

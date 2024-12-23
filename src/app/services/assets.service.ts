@@ -6,26 +6,24 @@ import {
 } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { User } from '../interfaces/users';
+import { Asset } from '../interfaces/assets';
 
 @Injectable({
   providedIn: 'root',
 })
-export class UsersService {
+export class AssetsService {
   baseUrl: string = 'http://localhost:8070/bff';
-  urlUsers: string = '/users';
+  urlAssets: string = '/assets';
 
   constructor(private http: HttpClient) {}
 
-  getUsers(
+  getAssets(
     page: number = 0,
     pageSize: number = 10,
     filters?: { [key: string]: any }
-  ): Observable<{ data: User[]; totalElements: number; totalPages: number }> {
-    // Base query parameters for pagination
+  ): Observable<{ data: Asset[]; totalElements: number; totalPages: number }> {
     let queryParams = `page=${page}&pageSize=${pageSize}`;
 
-    // Append filters dynamically to the query parameters
     if (filters) {
       for (const key in filters) {
         if (filters[key] !== undefined && filters[key] !== null) {
@@ -37,10 +35,9 @@ export class UsersService {
       }
     }
 
-    const requestUrl = `${this.baseUrl}${this.urlUsers}?${queryParams}`;
+    const requestUrl = `${this.baseUrl}${this.urlAssets}?${queryParams}`;
     console.log('Request URL:', requestUrl);
 
-    // Make the HTTP GET request and map the response
     return this.http.get<any>(requestUrl).pipe(
       map((response) => ({
         data: response.data,
@@ -51,29 +48,29 @@ export class UsersService {
     );
   }
 
-  postUser(user: User): Observable<string> {
+  postAsset(asset: Asset): Observable<string> {
     const headers = new HttpHeaders().set('Content-Type', 'application/json');
     return this.http
-      .post(`${this.baseUrl}${this.urlUsers}`, user, {
+      .post(`${this.baseUrl}${this.urlAssets}`, asset, {
         headers,
         responseType: 'text',
       })
       .pipe(catchError(this.handleError));
   }
 
-  patchUser(user: User): Observable<string> {
+  patchAsset(asset: Asset): Observable<string> {
     const headers = new HttpHeaders().set('Content-Type', 'application/json');
-    const patchReqUrl = `${this.baseUrl}${this.urlUsers}/${user.id}`;
+    const patchReqUrl = `${this.baseUrl}${this.urlAssets}/${asset.id}`;
     return this.http
-      .patch(patchReqUrl, user, {
+      .patch(patchReqUrl, asset, {
         headers,
         responseType: 'text',
       })
       .pipe(catchError(this.handleError));
   }
 
-  deleteUser(id: number): Observable<string> {
-    const deleteReqUrl = `${this.baseUrl}${this.urlUsers}/${id}`;
+  deleteAsset(id: number): Observable<string> {
+    const deleteReqUrl = `${this.baseUrl}${this.urlAssets}/${id}`;
     return this.http
       .delete(deleteReqUrl, { responseType: 'text' })
       .pipe(catchError(this.handleError));
@@ -87,21 +84,14 @@ export class UsersService {
         `Backend returned code ${error.status}, body was: ${error.error}`
       );
 
-      if (error.status === 409 || error.status === 401) {
+      if (error.status === 409) {
         try {
           const errorBody = JSON.parse(error.error);
           const errorMessage = JSON.parse(errorBody.message);
-          switch (errorMessage.code) {
-            case 1451:
-              return throwError(
-                'Foreign key constraint violation. Please ensure there are no related records before deleting.'
-              );
-            case 1062:
-              return throwError(
-                'User with the same username or email already exists.'
-              );
-            default:
-              return throwError('An unknown error occurred.');
+          if (errorMessage.code === 1451) {
+            return throwError(
+              'Foreign key constraint violation. Please ensure there are no related records before deleting.'
+            );
           }
         } catch (e) {
           console.error('Error parsing error response:', e);
