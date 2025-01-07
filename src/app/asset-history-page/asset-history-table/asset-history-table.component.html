@@ -1,17 +1,12 @@
 <div class="card mt-3 px-5 pb-5">
-  <!-- Table configuration -->
-  <p-toast />
-  <p-confirmPopup />
   <p-table
     #dt2
-    [value]="assets"
-    dataKey="id"
+    [value]="assetHistoryList"
     [paginator]="true"
     [rows]="pageSize"
-    [rowsPerPageOptions]="[10, 25, 50]"
-    styleClass="p-datatable-gridlines"
-    [lazy]="true"
     [totalRecords]="totalElements"
+    [lazy]="true"
+    styleClass="p-datatable-gridlines"
     [tableStyle]="{
       'min-width': '75rem',
       'table-layout': 'fixed',
@@ -24,7 +19,6 @@
     <ng-template pTemplate="caption">
       <div class="grid">
         <div class="col-6 flex flex-row">
-          <p-button (onClick)="showDialog()" label="Add Asset" class="mx-2" />
           <p-button
             class="mx-2"
             label="Clear"
@@ -51,53 +45,45 @@
           </ng-container>
         </div>
       </div>
-
-      <app-asset-dialog
-        [(visible)]="visible"
-        [editMode]="editMode"
-        [assetToBeInserted]="assetToBeinserted"
-        (save)="onSave($event.asset, $event.editMode)"
-      ></app-asset-dialog>
     </ng-template>
-
     <!-- Table Header with Pop-Up Filters -->
     <ng-template pTemplate="header">
       <tr>
         <th style="width: 5%" class="px-2 text-center">ID</th>
         <th style="width: 8%" class="px-0 text-center">
+          Asset ID
+          <p-columnFilter
+            type="numeric"
+            field="assetId"
+            display="menu"
+            placeholder="Filter by Asset ID"
+            [showOperator]="false"
+            [showAddButton]="false"
+          ></p-columnFilter>
+        </th>
+        <th style="width: 8%" class="px-0 text-center">
+          Admin ID
+          <p-columnFilter
+            type="numeric"
+            field="adminId"
+            display="menu"
+            placeholder="Filter by Admin ID"
+            [showOperator]="false"
+            [showAddButton]="false"
+          ></p-columnFilter>
+        </th>
+        <th style="width: 8%" class="px-0 text-center">
           User ID
           <p-columnFilter
             type="numeric"
-            field="userID"
+            field="userId"
             display="menu"
             placeholder="Filter by User ID"
             [showOperator]="false"
             [showAddButton]="false"
           ></p-columnFilter>
         </th>
-        <th style="width: 15%" class="px-0 text-center">
-          Model Name
-          <p-columnFilter
-            type="text"
-            field="modelName"
-            display="menu"
-            placeholder="Filter by Model Name"
-            [showOperator]="false"
-            [showAddButton]="false"
-          ></p-columnFilter>
-        </th>
-        <th style="width: 15%" class="px-0 text-center">
-          Type
-          <p-columnFilter
-            type="text"
-            field="type"
-            display="menu"
-            placeholder="Filter by Type"
-            [showOperator]="false"
-            [showAddButton]="false"
-          ></p-columnFilter>
-        </th>
-        <th style="width: 15%" class="px-0 text-center">
+        <th style="width: 10%" class="px-0 text-center">
           Status
           <p-columnFilter
             type="text"
@@ -120,35 +106,55 @@
             </ng-template>
           </p-columnFilter>
         </th>
-        <th style="width: 15%" class="px-0 text-center">
-          Cost €
+        <th style="width: 10%" class="px-0 text-center">
+          Action
           <p-columnFilter
-            type="numeric"
-            field="cost"
+            type="text"
+            field="action"
             display="menu"
-            placeholder="Filter by Cost"
+            placeholder="Filter by Action"
+            [showOperator]="false"
+            [showAddButton]="false"
+            [showMatchModes]="false"
+            [showApplyButton]="false"
+          >
+            <ng-template pTemplate="filter" let-filter="filterCallback">
+              <p-multiSelect
+                [options]="actionOptions"
+                [(ngModel)]="selectedAction"
+                placeholder="Select Action"
+                [style]="{ 'min-width': '12rem', width: '100%' }"
+                (onChange)="filter($event.value)"
+              ></p-multiSelect>
+            </ng-template>
+          </p-columnFilter>
+        </th>
+        <th style="width: 15%" class="px-0 text-center">
+          Date
+          <p-columnFilter
+            type="date"
+            field="date"
+            display="menu"
+            placeholder="Filter by Date"
             [showOperator]="false"
             [showAddButton]="false"
           ></p-columnFilter>
         </th>
-
-        <th style="width: 5%" class="px-0 text-center">Edit</th>
-        <th style="width: 5%" class="px-0 text-center">Del</th>
-        <th style="width: 5%" class="px-0 text-center">History</th>
+        <th style="width: 20%" class="px-0 text-center">Comment</th>
       </tr>
     </ng-template>
 
     <!-- Table Body -->
-    <ng-template pTemplate="body" let-asset>
+    <ng-template pTemplate="body" let-history>
       <tr class="text-center">
-        <td class="text-center">{{ asset.id }}</td>
-        <td class="text-center">{{ asset.userID }}</td>
-        <td class="text-center">{{ asset.modelName }}</td>
-        <td class="text-center">{{ asset.type }}</td>
+        <td class="text-center">{{ history.id }}</td>
+        <td class="text-center">{{ history.assetId }}</td>
+        <td class="text-center">{{ history.adminId }}</td>
+        <td class="text-center">{{ history.userId || "-" }}</td>
         <td class="text-center">
           <p-tag
-            [value]="asset.status"
-            [severity]="getSeverity(asset.status)"
+            [value]="history.status"
+            [severity]="getSeverity(history.status)"
             [style]="{
               display: 'inline-block',
               width: '100px',
@@ -156,50 +162,26 @@
             }"
           ></p-tag>
         </td>
-        <td class="text-center">{{ asset.cost }}</td>
-        <td>
-          <div class="flex justify-content-center">
-            <p-button
-              [rounded]="true"
-              (onClick)="showDialog(asset)"
-              text="Edit"
-              icon="pi pi-pencil"
-              severity="info"
-              aria-label="edit"
-            />
-          </div>
+        <td class="text-center">
+          <p-tag
+            [value]="history.action"
+            [severity]="getSeverity(history.action)"
+            [style]="{
+              display: 'inline-block',
+              width: '100px',
+              'text-align': 'center'
+            }"
+          ></p-tag>
         </td>
-        <td>
-          <div class="flex justify-content-center">
-            <p-button
-              icon="pi pi-trash"
-              [rounded]="true"
-              text="Delete"
-              severity="danger"
-              aria-label="Delete"
-              (click)="deleteAssetRow($event, asset.id)"
-            />
-          </div>
-        </td>
-        <td>
-          <div class="flex justify-content-center">
-            <p-button
-              icon="pi pi-history"
-              [rounded]="true"
-              text="History"
-              severity="secondary"
-              aria-label="History"
-              (click)="viewAssetHistory(asset.id)"
-            />
-          </div>
-        </td>
+        <td class="text-center">{{ history.date | date : "medium" }}</td>
+        <td class="text-center">{{ history.comment }}</td>
       </tr>
     </ng-template>
 
     <!-- Empty Table Message -->
     <ng-template pTemplate="emptymessage">
       <tr>
-        <td colspan="8" class="text-center">No assets found.</td>
+        <td colspan="8" class="text-center">No history records found.</td>
       </tr>
     </ng-template>
   </p-table>

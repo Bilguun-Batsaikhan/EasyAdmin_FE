@@ -21,6 +21,7 @@ import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
 import { CommonService } from '../../services/common.service';
 import { AssetDialogComponent } from '../asset-dialog/asset-dialog.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-asset-table',
@@ -54,7 +55,8 @@ export class AssetTableComponent {
     private assetsService: AssetsService,
     private confirmationService: ConfirmationService,
     private messageService: MessageService,
-    protected commonService: CommonService
+    protected commonService: CommonService,
+    private router: Router
   ) {}
   // Pagination properties
   pageNo: number = 0;
@@ -268,8 +270,11 @@ export class AssetTableComponent {
     this.assets.push(newAsset);
   }
 
-  viewAssetHistory(asset: any): void {
-    console.log('Viewing asset history:', asset);
+  viewAssetHistory(assetId: any): void {
+    console.log('Viewing asset history:', assetId);
+    this.router.navigate(['/assets-history'], {
+      queryParams: { assetId: assetId },
+    });
   }
 
   getSeverity(

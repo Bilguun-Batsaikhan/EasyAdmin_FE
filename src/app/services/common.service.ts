@@ -1,8 +1,7 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { User } from '../interfaces/users';
-import { Asset } from '../interfaces/assets';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { Observable } from 'rxjs';
+import { Observable, catchError, map } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -97,6 +96,33 @@ export class CommonService {
       (error) => {
         this.errorMessage(error); // Handle error
       }
+    );
+  }
+
+  loadData<T>(
+    service: any,
+    pageNo: number,
+    pageSize: number,
+    filters?: { [key: string]: any }
+  ): Observable<{ data: T[]; totalElements: number; totalPages: number }> {
+    console.log('Loading Data with filters:', filters);
+    return service.getAssetHistory(pageNo, pageSize, filters).pipe(
+      map((response: any) => {
+        if (response.data) {
+          return {
+            data: response.data,
+            totalElements: response.totalElements,
+            totalPages: response.totalPages,
+          };
+        } else {
+          console.error('Data field is missing in the response:', response);
+          throw new Error('Data field is missing in the response');
+        }
+      }),
+      catchError((error: HttpErrorResponse) => {
+        console.error('There was an error!', error);
+        throw error;
+      })
     );
   }
 }
