@@ -4,6 +4,7 @@ import { HomeComponent } from './home-page/home/home.component';
 import { UsersComponent } from './user-page/users/users.component';
 import { authGuard } from './auth.guard';
 import { AssetsComponent } from './asset-page/assets/assets.component';
+import { AssetHistoryComponent } from './asset-history-page/asset-history/asset-history.component';
 
 const routeConfig: Routes = [
   {
@@ -31,6 +32,12 @@ const routeConfig: Routes = [
     path: 'assets',
     component: AssetsComponent,
     title: 'Assets Page',
+    canActivate: [authGuard],
+  },
+  {
+    path: 'assets-history',
+    component: AssetHistoryComponent,
+    title: 'Assets History Page',
     canActivate: [authGuard],
   },
 ];

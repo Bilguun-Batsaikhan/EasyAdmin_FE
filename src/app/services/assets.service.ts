@@ -22,6 +22,7 @@ export class AssetsService {
     pageSize: number = 10,
     filters?: { [key: string]: any }
   ): Observable<{ data: Asset[]; totalElements: number; totalPages: number }> {
+    console.log('Filters', filters);
     let queryParams = `page=${page}&pageSize=${pageSize}`;
 
     if (filters) {
@@ -80,15 +81,17 @@ export class AssetsService {
       .pipe(catchError(this.handleError));
   }
 
-  private handleError(error: HttpErrorResponse) {
+  private handleError(error: HttpErrorResponse): Observable<never> {
     if (error.error instanceof ErrorEvent) {
+      // Client-side or network error
       console.error('An error occurred:', error.error.message);
     } else {
+      // Backend returned an unsuccessful response code
       console.error(
         `Backend returned code ${error.status}, body was: ${error.error}`
       );
 
-      if (error.status === 409) {
+      if (error.status === 409 || error.status === 400) {
         try {
           const errorBody = JSON.parse(error.error);
           const errorMessage = JSON.parse(errorBody.message);
@@ -96,6 +99,8 @@ export class AssetsService {
             return throwError(
               'Foreign key constraint violation. Please ensure there are no related records before deleting.'
             );
+          } else if (errorMessage.code === 422) {
+            return throwError(errorMessage.message);
           }
         } catch (e) {
           console.error('Error parsing error response:', e);

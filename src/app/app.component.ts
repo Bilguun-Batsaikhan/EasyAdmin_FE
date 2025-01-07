@@ -3,8 +3,7 @@ import { RouterOutlet } from '@angular/router';
 import { FormContainerComponent } from './login-page/form-container/form-container.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MessageService } from 'primeng/api';
 //import { CommonModule } from '@angular/common';
 
 @Component({
