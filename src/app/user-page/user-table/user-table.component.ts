@@ -161,12 +161,6 @@ export class UserTableComponent implements OnInit {
   getInputValue(event: Event): string {
     return (event.target as HTMLInputElement).value || '';
   }
-  formatDate(date: Date): string {
-    const year = date.getFullYear();
-    const month = ('0' + (date.getMonth() + 1)).slice(-2);
-    const day = ('0' + date.getDate()).slice(-2);
-    return `${year}-${month}-${day}`;
-  }
 
   // Every time the user changes the page or the number of rows, this method is called
   onPageChange(event: any): void {
@@ -189,7 +183,7 @@ export class UserTableComponent implements OnInit {
         let filterValue = filterMeta.value;
         const matchMode = filterMeta.matchMode;
         if (field === 'birthdate' && filterValue instanceof Date) {
-          filterValue = this.formatDate(filterValue);
+          filterValue = this.commonService.formatDate(filterValue);
         }
         // Only add the filter to the filters object if a value is present
         if (filterValue !== undefined && filterValue !== null) {
@@ -209,33 +203,17 @@ export class UserTableComponent implements OnInit {
   }
 
   deleteUserRow(event: Event, userId: any): void {
-    console.log('Delete button clicked');
-    this.confirmationService.confirm({
-      target: event.target as EventTarget,
-      message: 'Do you want to delete this record?',
-      icon: 'pi pi-info-circle',
-      accept: () => {
-        this.usersService.deleteUser(userId).subscribe(
-          (response: string) => {
-            this.users = this.commonService.removeTableRow<User>(
-              userId as number,
-              this.users
-            );
-
-            this.commonService.successMessage(response); // Show success message
-            this.messageService.add({
-              severity: 'info',
-              summary: 'Confirmed',
-              detail: 'Record deleted',
-              life: 3000,
-            });
-          },
-          (error) => {
-            this.commonService.errorMessage(error);
-          }
+    this.commonService.confirmAction(
+      'Do you want to delete this record?',
+      () => {
+        this.commonService.deleteRow<User>(
+          userId,
+          this.users,
+          this.usersService.deleteUser.bind(this.usersService), // Pass the service method
+          (updatedData) => (this.users = updatedData) // Update the users array
         );
       },
-      reject: () => {
+      () => {
         this.messageService.add({
           severity: 'error',
           summary: 'Rejected',
@@ -243,7 +221,8 @@ export class UserTableComponent implements OnInit {
           life: 3000,
         });
       },
-    });
+      event.target as EventTarget
+    );
   }
 
   removeTableRow(userId: any): void {
@@ -253,8 +232,8 @@ export class UserTableComponent implements OnInit {
   convertUserForServer(user: any): any {
     const formattedUser = {
       ...user,
-      role: user.role.role,
-      birthdate: this.formatDate(new Date(user.birthdate)),
+      role: user.role.role || user.role,
+      birthdate: this.commonService.formatDate(new Date(user.birthdate)),
     };
 
     // Filter out properties with undefined or null values

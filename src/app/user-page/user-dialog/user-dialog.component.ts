@@ -71,7 +71,10 @@ export class UserDialogComponent implements OnChanges {
   // Reactive form setup
   form: FormGroup = new FormGroup({
     username: new FormControl('', Validators.required),
-    password: new FormControl('', Validators.required),
+    password: new FormControl('', [
+      Validators.required,
+      Validators.minLength(8),
+    ]),
     email: new FormControl('', [Validators.required, Validators.email]),
     phoneNumber: new FormControl('', Validators.required),
     role: new FormControl(userRoleEnum.USER, Validators.required),

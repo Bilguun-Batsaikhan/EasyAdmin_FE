@@ -1,15 +1,8 @@
 <p-menubar [model]="menuItems" class="shadow-2 surface-0">
-  <div class="p-inputgroup ml-auto">
-    <!-- <input type="text" pInputText placeholder="Search" /> -->
-    <!-- <button
-      pButton
-      type="button"
-      icon="pi pi-search"
-      class="p-button-primary"
-    ></button> -->
-    <div class="role-display">
+  <div *ngIf="isLoggedIn()" class="p-inputgroup ml-auto">
+    <div class="role-display px-3 mx-4">
       <i class="pi pi-user"></i>
-      <span>{{ role }}</span>
+      <span>{{ userToDisplay }}</span>
     </div>
     <p-button
       *ngIf="isLoggedIn()"
@@ -18,5 +11,20 @@
       icon="pi pi-sign-out"
       (click)="onSignOut()"
     ></p-button>
+    <!-- <p-button
+      type="button"
+      label="Saga Blue"
+      (click)="switchTheme('saga-blue')"
+    ></p-button>
+    <p-button
+      type="button"
+      label="Vela Blue"
+      (click)="switchTheme('vela-blue')"
+    ></p-button>
+    <p-button
+      type="button"
+      label="Arya Blue"
+      (click)="switchTheme('arya-blue')"
+    ></p-button> -->
   </div>
 </p-menubar>

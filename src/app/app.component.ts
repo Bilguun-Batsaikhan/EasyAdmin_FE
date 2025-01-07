@@ -21,5 +21,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
   styleUrl: './app.component.css',
 })
 export class AppComponent {
-  title = 'login';
+  title = 'EasyAdminFE';
+
+  ngOnInit(): void {
+    // Clear local storage on application start
+    // localStorage.clear();
+  }
 }

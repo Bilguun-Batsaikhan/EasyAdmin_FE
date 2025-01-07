@@ -86,10 +86,29 @@ export class AssetDialogComponent implements OnChanges {
   onSave(): void {
     this.formSubmitted = true;
     if (this.form.valid) {
+      const formValues = this.form.value;
+
+      // Check if 'status' is empty, and if so, retain the current status value
+      console.log('formValues:', formValues);
+      console.log('formValues.status:', formValues.status);
+      console.log(
+        'this.assetToBeInserted.status:',
+        this.assetToBeInserted.status
+      );
+
+      const updatedAsset = {
+        ...this.assetToBeInserted,
+        ...formValues,
+        status: formValues.status || this.assetToBeInserted.status,
+      };
+
+      console.log('updatedAsset:', updatedAsset);
+
       this.save.emit({
-        asset: { ...this.assetToBeInserted, ...this.form.value },
+        asset: updatedAsset,
         editMode: this.editMode,
       });
+
       this.visible = false;
       this.visibleChange.emit(this.visible);
     } else {

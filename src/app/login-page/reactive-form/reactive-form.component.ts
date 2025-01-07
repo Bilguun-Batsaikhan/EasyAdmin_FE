@@ -55,6 +55,9 @@ export class ReactiveFormComponent {
           // Decode the accessToken to extract the role
           const decodedToken: any = jwtDecode(accessToken);
           const role = decodedToken.role;
+          const username = decodedToken.username;
+
+          localStorage.setItem('username', username);
           localStorage.setItem('role', role);
           if (role === 'SUPER_ADMIN') {
             this.router.navigate(['/users']);

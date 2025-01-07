@@ -68,7 +68,7 @@ export class AssetTableComponent {
   statusOptions = [
     { label: 'AVAILABLE', value: 'AVAILABLE' },
     { label: 'UNAVAILABLE', value: 'UNAVAILABLE' },
-    { label: 'ASSIGNED', value: 'ASSGINED' },
+    { label: 'ASSIGNED', value: 'ASSIGNED' },
   ];
   selectedStatus: string[] = [];
   activeFilters: { field: string; value: any }[] = [];
@@ -167,34 +167,19 @@ export class AssetTableComponent {
 
     console.log('Active Filters:', this.activeFilters);
   }
-  //This can be moved to shared service
+
   deleteAssetRow(event: Event, assetId: any): void {
-    console.log('Delete button clicked');
-    this.confirmationService.confirm({
-      target: event.target as EventTarget,
-      message: 'Do you want to delete this record?',
-      icon: 'pi pi-info-circle',
-      accept: () => {
-        this.assetsService.deleteAsset(assetId).subscribe(
-          (response: string) => {
-            this.assets = this.commonService.removeTableRow(
-              assetId,
-              this.assets
-            ); // Remove the asset from the table
-            this.commonService.successMessage(response); // Show success message
-            this.messageService.add({
-              severity: 'info',
-              summary: 'Confirmed',
-              detail: 'Record deleted',
-              life: 3000,
-            });
-          },
-          (error) => {
-            this.commonService.errorMessage(error);
-          }
+    this.commonService.confirmAction(
+      'Do you want to delete this record?',
+      () => {
+        this.commonService.deleteRow<Asset>(
+          assetId,
+          this.assets,
+          this.assetsService.deleteAsset.bind(this.assetsService), // Pass the service method
+          (updatedData) => (this.assets = updatedData) // Update the assets array
         );
       },
-      reject: () => {
+      () => {
         this.messageService.add({
           severity: 'error',
           summary: 'Rejected',
@@ -202,7 +187,8 @@ export class AssetTableComponent {
           life: 3000,
         });
       },
-    });
+      event.target as EventTarget
+    );
   }
 
   showDialog(asset: any = null): void {
@@ -220,7 +206,7 @@ export class AssetTableComponent {
   convertAssetForServer(asset: any): any {
     const formattedAsset = {
       ...asset,
-      status: asset.status.name,
+      status: asset.status.name || asset.status,
     };
 
     // Filter out properties with undefined, null, or empty string values
@@ -280,5 +266,34 @@ export class AssetTableComponent {
 
   addTableRow(newAsset: any): void {
     this.assets.push(newAsset);
+  }
+
+  viewAssetHistory(asset: any): void {
+    console.log('Viewing asset history:', asset);
+  }
+
+  getSeverity(
+    status: string
+  ):
+    | 'success'
+    | 'secondary'
+    | 'info'
+    | 'warning'
+    | 'danger'
+    | 'contrast'
+    | undefined {
+    switch (status) {
+      case 'AVAILABLE':
+        return 'success';
+
+      case 'ASSIGNED':
+        return 'info';
+
+      case 'UNAVAILABLE':
+        return 'danger';
+
+      default:
+        return undefined;
+    }
   }
 }

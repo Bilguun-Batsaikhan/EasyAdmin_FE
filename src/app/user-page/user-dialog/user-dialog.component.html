@@ -2,15 +2,16 @@
   header="Insert User"
   [modal]="true"
   [(visible)]="visible"
-  [style]="{ width: '40rem' }"
+  [style]="{ width: '40rem', height: 'auto' }"
   (onHide)="onCancel()"
+  styleClass="p-5 m-5"
 >
-  <span *ngIf="formSubmitted && form.invalid" class="block mb-5 error-message">
+  <!-- <span *ngIf="formSubmitted && form.invalid" class="block mb-5 error-message">
     All fields must be filled
-  </span>
+  </span> -->
 
   <form [formGroup]="form" (ngSubmit)="onSave()">
-    <div class="flex flex-wrap justify-content-center gap-4">
+    <div class="flex flex-wrap justify-content-center gap-4 pt-5">
       <div class="card flex justify-content-center">
         <p-floatLabel>
           <input
@@ -32,9 +33,10 @@
             [feedback]="false"
             autocomplete="new-password"
           />
-          <label for="new-password"
-            ><span class="required">*</span> Password</label
-          >
+          <label for="new-password">
+            <span class="required">*</span>
+            {{ form.get('password')?.errors?.['minlength'] ? 'Must be at least 8 char long.' : 'Password' }}
+          </label>
         </p-floatLabel>
       </div>
       <div class="card flex justify-content-center">

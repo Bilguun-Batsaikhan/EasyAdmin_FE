@@ -7,6 +7,7 @@ import { ButtonModule } from 'primeng/button';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../services/auth.service';
+import { ThemeService } from '../services/theme.service';
 
 @Component({
   selector: 'app-navigation-bar',
@@ -22,10 +23,17 @@ import { AuthService } from '../services/auth.service';
   styleUrls: ['./navigation-bar.component.css'],
 })
 export class NavigationBarComponent implements OnInit {
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private themeService: ThemeService
+  ) {}
 
   menuItems: MenuItem[] | undefined;
   role = localStorage.getItem('role');
+  username = localStorage.getItem('username');
+  userToDisplay = `Welcome, ${this.username} (${this.role})`;
+
   ngOnInit() {
     this.menuItems = [
       {
@@ -66,5 +74,9 @@ export class NavigationBarComponent implements OnInit {
 
   isLoggedIn(): boolean {
     return localStorage.length > 0;
+  }
+
+  switchTheme(theme: string) {
+    this.themeService.switchTheme(theme);
   }
 }

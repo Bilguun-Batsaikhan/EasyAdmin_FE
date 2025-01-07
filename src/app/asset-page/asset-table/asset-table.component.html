@@ -121,7 +121,7 @@
           </p-columnFilter>
         </th>
         <th style="width: 15%" class="px-0 text-center">
-          Cost
+          Cost €
           <p-columnFilter
             type="numeric"
             field="cost"
@@ -134,6 +134,7 @@
 
         <th style="width: 5%" class="px-0 text-center">Edit</th>
         <th style="width: 5%" class="px-0 text-center">Del</th>
+        <th style="width: 5%" class="px-0 text-center">History</th>
       </tr>
     </ng-template>
 
@@ -144,7 +145,17 @@
         <td class="text-center">{{ asset.userID }}</td>
         <td class="text-center">{{ asset.modelName }}</td>
         <td class="text-center">{{ asset.type }}</td>
-        <td class="text-center">{{ asset.status }}</td>
+        <td class="text-center">
+          <p-tag
+            [value]="asset.status"
+            [severity]="getSeverity(asset.status)"
+            [style]="{
+              display: 'inline-block',
+              width: '100px',
+              'text-align': 'center'
+            }"
+          ></p-tag>
+        </td>
         <td class="text-center">{{ asset.cost }}</td>
         <td>
           <div class="flex justify-content-center">
@@ -167,6 +178,18 @@
               severity="danger"
               aria-label="Delete"
               (click)="deleteAssetRow($event, asset.id)"
+            />
+          </div>
+        </td>
+        <td>
+          <div class="flex justify-content-center">
+            <p-button
+              icon="pi pi-history"
+              [rounded]="true"
+              text="History"
+              severity="secondary"
+              aria-label="History"
+              (click)="viewAssetHistory(asset)"
             />
           </div>
         </td>
