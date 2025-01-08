@@ -64,13 +64,13 @@
     <ng-template pTemplate="header">
       <tr>
         <th style="width: 5%" class="px-2 text-center">ID</th>
-        <th style="width: 8%" class="px-0 text-center">
-          User ID
+        <th style="width: 15%" class="px-0 text-center">
+          Username
           <p-columnFilter
-            type="numeric"
-            field="userID"
+            type="text"
+            field="username"
             display="menu"
-            placeholder="Filter by User ID"
+            placeholder="Filter by Username"
             [showOperator]="false"
             [showAddButton]="false"
           ></p-columnFilter>
@@ -142,7 +142,7 @@
     <ng-template pTemplate="body" let-asset>
       <tr class="text-center">
         <td class="text-center">{{ asset.id }}</td>
-        <td class="text-center">{{ asset.userID }}</td>
+        <td class="text-center">{{ asset.username }}</td>
         <td class="text-center">{{ asset.modelName }}</td>
         <td class="text-center">{{ asset.type }}</td>
         <td class="text-center">

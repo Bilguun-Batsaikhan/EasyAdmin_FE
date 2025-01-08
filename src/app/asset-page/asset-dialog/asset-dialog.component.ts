@@ -47,7 +47,7 @@ export class AssetDialogComponent implements OnChanges {
     type: '',
     status: AssetStatus.AVAILABLE,
     cost: 0,
-    userID: 0,
+    username: '',
   };
 
   @Output() visibleChange = new EventEmitter<boolean>();

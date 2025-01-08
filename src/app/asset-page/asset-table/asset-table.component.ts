@@ -82,14 +82,14 @@ export class AssetTableComponent {
     type: string;
     status: AssetStatus;
     cost: number;
-    userID: number;
+    username: number;
   */
   assetToBeinserted: Asset = {
     modelName: '',
     type: '',
     status: AssetStatus.AVAILABLE,
     cost: 0,
-    userID: 0,
+    username: '',
   };
 
   resetAssetForm(): void {
@@ -98,7 +98,7 @@ export class AssetTableComponent {
       type: '',
       status: AssetStatus.AVAILABLE,
       cost: 0,
-      userID: 0,
+      username: '',
     };
   }
 

@@ -5,5 +5,5 @@ export interface Asset {
   type: string;
   status: AssetStatus;
   cost: number;
-  userID: number;
+  username: string;
 }
