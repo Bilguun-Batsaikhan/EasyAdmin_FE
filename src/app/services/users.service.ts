@@ -17,6 +17,14 @@ export class UsersService {
 
   constructor(private http: HttpClient) {}
 
+  getUser(userId?: number): Observable<User> {
+    if (!userId) {
+      return throwError('User ID is required.');
+    }
+    const requestUrl = `${this.baseUrl}${this.urlUsers}/${userId}`;
+    return this.http.get<User>(requestUrl).pipe(catchError(this.handleError));
+  }
+
   getUsers(
     page: number = 0,
     pageSize: number = 10,

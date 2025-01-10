@@ -59,7 +59,7 @@ export class AssetsService {
       .pipe(catchError(this.handleError));
   }
 
-  patchAsset(asset: Asset): Observable<string> {
+  patchAsset(asset: Asset): Observable<Asset> {
     const headers = new HttpHeaders().set('Content-Type', 'application/json');
     const patchReqUrl = `${this.baseUrl}${this.urlAssets}/${asset.id}`;
 
@@ -67,9 +67,8 @@ export class AssetsService {
     const { id, ...assetWithoutId } = asset;
 
     return this.http
-      .patch(patchReqUrl, assetWithoutId, {
+      .patch<Asset>(patchReqUrl, assetWithoutId, {
         headers,
-        responseType: 'text',
       })
       .pipe(catchError(this.handleError));
   }

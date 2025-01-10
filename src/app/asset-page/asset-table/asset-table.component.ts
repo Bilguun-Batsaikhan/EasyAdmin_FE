@@ -22,6 +22,8 @@ import { ToastModule } from 'primeng/toast';
 import { CommonService } from '../../services/common.service';
 import { AssetDialogComponent } from '../asset-dialog/asset-dialog.component';
 import { Router } from '@angular/router';
+import { User } from '../../interfaces/users';
+import { UsersService } from '../../services/users.service';
 
 @Component({
   selector: 'app-asset-table',
@@ -53,6 +55,7 @@ export class AssetTableComponent {
   // Services
   constructor(
     private assetsService: AssetsService,
+    private usersService: UsersService,
     private confirmationService: ConfirmationService,
     private messageService: MessageService,
     protected commonService: CommonService,
@@ -197,9 +200,11 @@ export class AssetTableComponent {
     if (asset) {
       this.editMode = true;
       this.assetToBeinserted = { ...asset };
+      console.log('Editing asset:', this.assetToBeinserted);
     } else {
       this.editMode = false;
       this.resetAssetForm();
+      console.log('Adding new asset:', this.assetToBeinserted);
     }
     // Open the dialog
     this.visible = true;
@@ -211,10 +216,17 @@ export class AssetTableComponent {
       status: asset.status.name || asset.status,
     };
 
-    // Filter out properties with undefined, null, or empty string values
+    // Exclude the nested 'user' field if it exists
+    if (formattedAsset.user) {
+      delete formattedAsset.user;
+    }
+
+    // Filter out properties with undefined, null, empty string values, and exclude 'username' and 'deleted'
     const filteredAsset = Object.keys(formattedAsset).reduce(
       (acc: { [key: string]: any }, key: string) => {
         if (
+          key !== 'username' &&
+          key !== 'deleted' &&
           formattedAsset[key] !== undefined &&
           formattedAsset[key] !== null &&
           formattedAsset[key] !== ''
@@ -225,18 +237,36 @@ export class AssetTableComponent {
       },
       {}
     );
+
     return filteredAsset;
   }
 
   onSave(asset: any, edit: boolean): void {
+    console.log('Before conversion:', asset);
     asset = this.convertAssetForServer(asset);
+    console.log('After conversion:', asset);
     if (edit) {
       console.log('Edit asset:', asset);
       this.assetsService.patchAsset(asset).subscribe(
-        (response: string) => {
-          this.updateTableRow(asset); // Update the specific row in the table
-          this.commonService.successMessage(response);
-          this.visible = false; // Close the dialog
+        (updatedAsset: Asset) => {
+          if (updatedAsset.userID) {
+            // Fetch the username if userID exists
+            this.usersService.getUser(updatedAsset.userID).subscribe(
+              (user: User) => {
+                updatedAsset.username = user.username;
+                this.updateTableRow(updatedAsset); // Update the specific row in the table with the returned asset
+                this.commonService.successMessage('Asset updated successfully');
+                this.visible = false; // Close the dialog
+              },
+              (error) => {
+                this.commonService.errorMessage(error);
+              }
+            );
+          } else {
+            this.updateTableRow(updatedAsset); // Update the specific row in the table without fetching username
+            this.commonService.successMessage('Asset updated successfully');
+            this.visible = false; // Close the dialog
+          }
         },
         (error) => {
           this.commonService.errorMessage(error);

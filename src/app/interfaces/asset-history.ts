@@ -1,8 +1,8 @@
 export interface AssetHistory {
   id: number;
-  assetId: number;
-  adminId: number;
-  userId: number | null;
+  admin: string;
+  user: string | null;
+  modelName: string;
   status: string;
   action: string;
   date: string;

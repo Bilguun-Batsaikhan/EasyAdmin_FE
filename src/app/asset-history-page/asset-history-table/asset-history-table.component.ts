@@ -60,6 +60,7 @@ export class AssetHistoryTableComponent {
     private confirmationService: ConfirmationService,
     protected commonService: CommonService
   ) {}
+
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
       this.assetId = params['assetId'];

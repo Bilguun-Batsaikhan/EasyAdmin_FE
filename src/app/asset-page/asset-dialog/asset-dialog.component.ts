@@ -89,12 +89,12 @@ export class AssetDialogComponent implements OnChanges {
       const formValues = this.form.value;
 
       // Check if 'status' is empty, and if so, retain the current status value
-      console.log('formValues:', formValues);
-      console.log('formValues.status:', formValues.status);
-      console.log(
-        'this.assetToBeInserted.status:',
-        this.assetToBeInserted.status
-      );
+      // console.log('formValues:', formValues);
+      // console.log('formValues.status:', formValues.status);
+      // console.log(
+      //   'this.assetToBeInserted.status:',
+      //   this.assetToBeInserted.status
+      // );
 
       const updatedAsset = {
         ...this.assetToBeInserted,
@@ -102,7 +102,7 @@ export class AssetDialogComponent implements OnChanges {
         status: formValues.status || this.assetToBeInserted.status,
       };
 
-      console.log('updatedAsset:', updatedAsset);
+      console.log('(dialog) updatedAsset:', updatedAsset);
 
       this.save.emit({
         asset: updatedAsset,

@@ -50,35 +50,35 @@
     <ng-template pTemplate="header">
       <tr>
         <th style="width: 5%" class="px-2 text-center">ID</th>
-        <th style="width: 8%" class="px-0 text-center">
-          Asset ID
+        <th style="width: 10%" class="px-0 text-center">
+          Admin
           <p-columnFilter
-            type="numeric"
-            field="assetId"
+            type="text"
+            field="admin"
             display="menu"
-            placeholder="Filter by Asset ID"
+            placeholder="Filter by Admin"
             [showOperator]="false"
             [showAddButton]="false"
           ></p-columnFilter>
         </th>
-        <th style="width: 8%" class="px-0 text-center">
-          Admin ID
+        <th style="width: 10%" class="px-0 text-center">
+          User
           <p-columnFilter
-            type="numeric"
-            field="adminId"
+            type="text"
+            field="user"
             display="menu"
-            placeholder="Filter by Admin ID"
+            placeholder="Filter by User"
             [showOperator]="false"
             [showAddButton]="false"
           ></p-columnFilter>
         </th>
-        <th style="width: 8%" class="px-0 text-center">
-          User ID
+        <th style="width: 10%" class="px-0 text-center">
+          Model Name
           <p-columnFilter
-            type="numeric"
-            field="userId"
+            type="text"
+            field="modelName"
             display="menu"
-            placeholder="Filter by User ID"
+            placeholder="Filter by Model Name"
             [showOperator]="false"
             [showAddButton]="false"
           ></p-columnFilter>
@@ -140,7 +140,7 @@
             [showAddButton]="false"
           ></p-columnFilter>
         </th>
-        <th style="width: 20%" class="px-0 text-center">Comment</th>
+        <th style="width: 25%" class="px-0 text-center">Comment</th>
       </tr>
     </ng-template>
 
@@ -148,9 +148,9 @@
     <ng-template pTemplate="body" let-history>
       <tr class="text-center">
         <td class="text-center">{{ history.id }}</td>
-        <td class="text-center">{{ history.assetId }}</td>
-        <td class="text-center">{{ history.adminId }}</td>
-        <td class="text-center">{{ history.userId || "-" }}</td>
+        <td class="text-center">{{ history.admin }}</td>
+        <td class="text-center">{{ history.user || "-" }}</td>
+        <td class="text-center">{{ history.modelName }}</td>
         <td class="text-center">
           <p-tag
             [value]="history.status"
