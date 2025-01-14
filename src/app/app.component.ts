@@ -21,7 +21,9 @@ import { MessageService } from 'primeng/api';
 })
 export class AppComponent {
   title = 'EasyAdminFE';
-
+  scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
   ngOnInit(): void {
     // Clear local storage on application start
     // localStorage.clear();

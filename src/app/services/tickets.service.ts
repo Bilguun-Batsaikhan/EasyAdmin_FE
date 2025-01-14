@@ -6,29 +6,31 @@ import {
 } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { Asset } from '../interfaces/assets';
+import { Ticket } from '../interfaces/tickets';
 
 @Injectable({
   providedIn: 'root',
 })
-export class AssetsService {
+export class TicketsService {
   baseUrl: string = 'http://localhost:8070/bff';
-  urlAssets: string = '/assets';
+  urlTickets: string = '/tickets';
 
   constructor(private http: HttpClient) {}
 
-  getAssets(
+  getTickets(
     page: number = 0,
     pageSize: number = 10,
     filters?: { [key: string]: any }
-  ): Observable<{ data: Asset[]; totalElements: number; totalPages: number }> {
+  ): Observable<{ data: Ticket[]; totalElements: number; totalPages: number }> {
     console.log('Filters', filters);
     let queryParams = `page=${page}&pageSize=${pageSize}`;
 
     if (filters) {
       for (const key in filters) {
         if (filters[key] !== undefined && filters[key] !== null) {
+          // encodeURIComponent(...): This is a built-in JavaScript function that encodes a URI component. It replaces each instance of certain characters by one, two, three, or four escape sequences representing the UTF-8 encoding of the character. This is useful for encoding query parameters in URLs to ensure they are properly formatted and transmitted.
           const value = encodeURIComponent(filters[key]);
+          // This line ensures that the first letter of the key is in lowercase. This might be needed if the API expects query parameter keys to start with a lowercase letter.
           const firstLetterLowerKey =
             key.charAt(0).toLowerCase() + key.slice(1);
           queryParams += `&${firstLetterLowerKey}=${value}`;
@@ -36,7 +38,7 @@ export class AssetsService {
       }
     }
 
-    const requestUrl = `${this.baseUrl}${this.urlAssets}?${queryParams}`;
+    const requestUrl = `${this.baseUrl}${this.urlTickets}?${queryParams}`;
     console.log('Request URL:', requestUrl);
 
     return this.http.get<any>(requestUrl).pipe(
@@ -49,37 +51,6 @@ export class AssetsService {
     );
   }
 
-  postAsset(asset: Asset): Observable<string> {
-    const headers = new HttpHeaders().set('Content-Type', 'application/json');
-    return this.http
-      .post(`${this.baseUrl}${this.urlAssets}`, asset, {
-        headers,
-        responseType: 'text',
-      })
-      .pipe(catchError(this.handleError));
-  }
-
-  patchAsset(asset: Asset): Observable<Asset> {
-    const headers = new HttpHeaders().set('Content-Type', 'application/json');
-    const patchReqUrl = `${this.baseUrl}${this.urlAssets}/${asset.id}`;
-
-    // Create a copy of the asset object without the id field
-    const { id, ...assetWithoutId } = asset;
-
-    return this.http
-      .patch<Asset>(patchReqUrl, assetWithoutId, {
-        headers,
-      })
-      .pipe(catchError(this.handleError));
-  }
-
-  deleteAsset(id: number): Observable<string> {
-    const deleteReqUrl = `${this.baseUrl}${this.urlAssets}/${id}`;
-    return this.http
-      .delete(deleteReqUrl, { responseType: 'text' })
-      .pipe(catchError(this.handleError));
-  }
-
   private handleError(error: HttpErrorResponse): Observable<never> {
     if (error.error instanceof ErrorEvent) {
       // Client-side or network error
@@ -87,29 +58,13 @@ export class AssetsService {
     } else {
       // Backend returned an unsuccessful response code
       console.error(
-        `Backend returned code ${error.status}, body was:`,
-        error.error
+        `Backend returned code ${error.status}, body was: ${error.error}`
       );
 
       if (error.status === 409 || error.status === 400) {
         try {
-          let errorBody: any;
-
-          // Check if error.error is a string or an object
-          if (typeof error.error === 'string') {
-            errorBody = JSON.parse(error.error); // Parse JSON string
-          } else if (typeof error.error === 'object') {
-            errorBody = error.error; // Use it directly
-          } else {
-            throw new Error('Unexpected error format'); // Fallback
-          }
-
-          // Parse the nested message if necessary
-          const errorMessage =
-            typeof errorBody.message === 'string'
-              ? JSON.parse(errorBody.message)
-              : errorBody.message;
-
+          const errorBody = JSON.parse(error.error);
+          const errorMessage = JSON.parse(errorBody.message);
           if (errorMessage.code === 1451) {
             return throwError(
               'Foreign key constraint violation. Please ensure there are no related records before deleting.'
@@ -122,8 +77,6 @@ export class AssetsService {
         }
       }
     }
-
-    // Fallback for unhandled errors
     return throwError('Something bad happened; please try again later.');
   }
 }

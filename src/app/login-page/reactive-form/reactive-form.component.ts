@@ -37,7 +37,7 @@ export class ReactiveFormComponent {
 
   constructor(private fb: FormBuilder) {
     this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
+      email: ['', [Validators.required]],
       password: ['', [Validators.required, Validators.minLength(8)]],
     });
   }
@@ -62,8 +62,7 @@ export class ReactiveFormComponent {
           if (role === 'SUPER_ADMIN') {
             this.router.navigate(['/users']);
           } else {
-            //change it later
-            console.error('Unauthorized access!');
+            this.router.navigate(['/assets']);
           }
         },
         (error) => {

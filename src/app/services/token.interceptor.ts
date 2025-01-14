@@ -40,12 +40,35 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
 
       // Parse error message
       let errorMessage = '';
+      /*{
+    "headers": {
+        "normalizedNames": {},
+        "lazyUpdate": null
+    },
+    "status": 400,
+    "statusText": "OK",
+    "url": "http://localhost:8070/bff/assets/31",
+    "ok": false,
+    "name": "HttpErrorResponse",
+    "message": "Http failure response for http://localhost:8070/bff/assets/31: 400 OK",
+    "error": {
+        "message": "{\"code\":422,\"message\":\"Asset cannot have a user assigned when it is AVAILABLE\"}",
+        "status": 400
+    }
+}*/
       try {
-        // Backend returns a JSON string, so we parse it
-        const parsedError = JSON.parse(error.error);
-        errorMessage = parsedError.message || '';
+        // Attempt to parse the backend error
+        if (typeof error.error === 'string') {
+          const parsedError = JSON.parse(error.error);
+          errorMessage = parsedError.message || '';
+        } else {
+          errorMessage = error.error?.message || 'Unknown error';
+        }
       } catch (e) {
-        errorMessage = error.error?.message || 'Unknown error';
+        const errorMessage = (e as Error).message;
+        console.warn('Error parsing failed:', errorMessage);
+        // Re-throw the error to the next error handler
+        return throwError(() => error);
       }
 
       // Handle 401 and expired token errors

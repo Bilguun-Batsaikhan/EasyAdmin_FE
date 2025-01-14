@@ -46,7 +46,7 @@ export class AssetDialogComponent implements OnChanges {
     modelName: '',
     type: '',
     status: AssetStatus.AVAILABLE,
-    cost: 0,
+    cost: null,
     username: '',
   };
 
@@ -64,7 +64,7 @@ export class AssetDialogComponent implements OnChanges {
     modelName: new FormControl('', Validators.required),
     type: new FormControl('', Validators.required),
     status: new FormControl(AssetStatus.AVAILABLE, Validators.required),
-    cost: new FormControl(0, Validators.required),
+    cost: new FormControl(null, Validators.required),
     userID: new FormControl(null),
   });
 
@@ -121,8 +121,8 @@ export class AssetDialogComponent implements OnChanges {
       modelName: '',
       type: '',
       status: AssetStatus.AVAILABLE,
-      cost: 0,
-      userID: 0,
+      cost: null,
+      userID: null,
     });
     this.formSubmitted = false;
   }

@@ -111,16 +111,18 @@ export class AssetTableComponent {
   }
 
   loadAssets(filters?: { [key: string]: any }) {
-    this.assetsService.getAssets(this.pageNo, this.pageSize, filters).subscribe(
-      (response) => {
-        this.assets = response.data;
-        this.totalElements = response.totalElements;
-        this.totalPages = response.totalPages;
-      },
-      (error) => {
-        console.error('There was an error!', error);
-      }
-    );
+    this.assetsService
+      .getAssets(this.pageNo, this.pageSize, filters)
+      .subscribe({
+        next: (response) => {
+          this.assets = response.data;
+          this.totalElements = response.totalElements;
+          this.totalPages = response.totalPages;
+        },
+        error: (error) => {
+          console.error('There was an error!', error);
+        },
+      });
   }
   // This can be moved to shared service
   onPageChange(event: any): void {
@@ -150,27 +152,8 @@ export class AssetTableComponent {
     this.loadAssets(filters);
   }
 
-  //This can be moved to shared service
   onFilterApplied(event: any): void {
-    this.activeFilters = [];
-    const filters = event.filters;
-
-    Object.keys(filters).forEach((field) => {
-      const filterArray = filters[field]; // Each filter field contains an array
-      if (filterArray?.length) {
-        const filterValue = filterArray[0]?.value; // Accessing the actual value of the filter
-        if (filterValue) {
-          // Check if the filter value is an object (for example, a date or an array)
-          const valueToDisplay =
-            filterValue instanceof Object
-              ? JSON.stringify(filterValue)
-              : filterValue;
-          this.activeFilters.push({ field, value: valueToDisplay });
-        }
-      }
-    });
-
-    console.log('Active Filters:', this.activeFilters);
+    this.commonService.onFilterApplied(event, this.activeFilters);
   }
 
   deleteAssetRow(event: Event, assetId: any): void {
@@ -277,7 +260,7 @@ export class AssetTableComponent {
       this.assetsService.postAsset(asset).subscribe(
         (response: string) => {
           this.addTableRow(asset); // Add a new row to the table
-          this.commonService.successMessage(response);
+          this.commonService.successMessage('Asset added successfully');
           this.visible = false; // Close the dialog
         },
         (error) => {
@@ -305,6 +288,11 @@ export class AssetTableComponent {
     this.router.navigate(['/assets-history'], {
       queryParams: { assetId: assetId },
     });
+  }
+
+  hasAdminRole(): boolean {
+    const role = localStorage.getItem('role');
+    return role === 'SYSTEM_ADMIN' || role === 'SUPER_ADMIN';
   }
 
   getSeverity(

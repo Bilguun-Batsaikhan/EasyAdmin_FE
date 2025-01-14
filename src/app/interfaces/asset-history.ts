@@ -5,6 +5,6 @@ export interface AssetHistory {
   modelName: string;
   status: string;
   action: string;
-  date: string;
+  date: Date | null;
   comment: string;
 }

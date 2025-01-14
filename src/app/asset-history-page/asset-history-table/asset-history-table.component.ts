@@ -56,8 +56,6 @@ export class AssetHistoryTableComponent {
   constructor(
     private route: ActivatedRoute,
     private assetHistoryService: AssetHistoryService,
-    private messageService: MessageService,
-    private confirmationService: ConfirmationService,
     protected commonService: CommonService
   ) {}
 
@@ -115,6 +113,11 @@ export class AssetHistoryTableComponent {
               this.assetHistoryList = response.data;
               this.totalElements = response.totalElements;
               this.totalPages = response.totalPages;
+
+              this.assetHistoryList.forEach(
+                (assetHistory) =>
+                  (assetHistory.Date = new Date(<Date>assetHistory.Date))
+              );
             },
             (error) => {
               console.error('There was an error!', error);
@@ -123,7 +126,9 @@ export class AssetHistoryTableComponent {
       }
     } else {
       const filters = this.applyFilters(event.filters);
-
+      if (filters.date) {
+        filters.date = new Date(filters.date).toISOString().slice(0, 10);
+      }
       console.log('Extracted Filters:', filters);
       console.log('Pagination:', this.pageSize);
 
@@ -150,6 +155,18 @@ export class AssetHistoryTableComponent {
         const filterMeta = eventFilters[field][0];
         let filterValue = filterMeta.value;
         const matchMode = filterMeta.matchMode;
+
+        if (field === 'date' && filterValue instanceof Date) {
+          // Adjust the date to UTC before formatting
+          filterValue = new Date(
+            Date.UTC(
+              filterValue.getFullYear(),
+              filterValue.getMonth(),
+              filterValue.getDate()
+            )
+          );
+          filterValue = filterValue.toISOString().slice(0, 10);
+        }
 
         if (filterValue !== undefined && filterValue !== null) {
           filters[field] = filterValue;

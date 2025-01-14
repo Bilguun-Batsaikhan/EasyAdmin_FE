@@ -6,3 +6,9 @@
 body {
   background-color: white;
 }
+
+.custom-accept-button {
+  background-color: #c5342f;
+  color: white;
+  border: none;
+}

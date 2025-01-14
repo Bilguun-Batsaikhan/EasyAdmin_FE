@@ -6,10 +6,9 @@
   (onHide)="onCancel()"
   styleClass="p-5 m-5"
 >
-  <!-- <span *ngIf="formSubmitted && form.invalid" class="block mb-5 error-message">
-    All fields must be filled
-  </span> -->
-
+  <div *ngIf="formSubmitted && form?.invalid">
+    <span class="block error-message"> All fields with * must be filled </span>
+  </div>
   <form [formGroup]="form" (ngSubmit)="onSave()">
     <div class="flex flex-wrap justify-content-center gap-4 pt-5">
       <div class="card flex justify-content-center">
@@ -19,6 +18,10 @@
             id="new-username"
             formControlName="username"
             autocomplete="new-username"
+            [ngClass]="{
+              'ng-invalid ng-dirty':
+                formSubmitted && form.get('username')?.invalid
+            }"
           />
           <label for="new-username"
             ><span class="required">*</span> Username</label
@@ -32,6 +35,10 @@
             formControlName="password"
             [feedback]="false"
             autocomplete="new-password"
+            [ngClass]="{
+              'ng-invalid ng-dirty':
+                formSubmitted && form.get('password')?.invalid
+            }"
           />
           <label for="new-password">
             <span class="required">*</span>
@@ -41,7 +48,15 @@
       </div>
       <div class="card flex justify-content-center">
         <p-floatLabel>
-          <input pInputText id="firstname" formControlName="firstname" />
+          <input
+            pInputText
+            id="firstname"
+            formControlName="firstname"
+            [ngClass]="{
+              'ng-invalid ng-dirty':
+                formSubmitted && form.get('firstname')?.invalid
+            }"
+          />
           <label for="firstname"
             ><span class="required">*</span> First Name</label
           >
@@ -49,24 +64,45 @@
       </div>
       <div class="card flex justify-content-center">
         <p-floatLabel>
-          <input pInputText id="surname" formControlName="surname" />
+          <input
+            pInputText
+            id="surname"
+            formControlName="surname"
+            [ngClass]="{
+              'ng-invalid ng-dirty':
+                formSubmitted && form.get('surname')?.invalid
+            }"
+          />
           <label for="surname"><span class="required">*</span> Surname</label>
         </p-floatLabel>
       </div>
-      <div class="card flex justify-content-center">
+      <div class="flex flex-column gap-2">
         <p-dropdown
+          id="role"
           class="fixed-dropdown"
           [options]="roles"
           formControlName="role"
+          [required]="true"
           [checkmark]="true"
           [showClear]="true"
           optionLabel="name"
           placeholder="Select a Role"
-        ></p-dropdown>
+          aria-describedby="role-help"
+        >
+          ></p-dropdown
+        >
+        <small id="role-help"> Default value is user. </small>
       </div>
       <div class="card flex justify-content-center">
         <p-floatLabel>
-          <input pInputText id="email" formControlName="email" />
+          <input
+            pInputText
+            id="email"
+            formControlName="email"
+            [ngClass]="{
+              'ng-invalid ng-dirty': formSubmitted && form.get('email')?.invalid
+            }"
+          />
           <label for="email"><span class="required">*</span> Email</label>
         </p-floatLabel>
       </div>
@@ -77,6 +113,10 @@
             formControlName="birthdate"
             dateFormat="dd.mm.yy"
             appendTo="body"
+            [ngClass]="{
+              'ng-invalid ng-dirty':
+                formSubmitted && form.get('birthdate')?.invalid
+            }"
           ></p-calendar>
           <label for="birth_date"
             ><span class="required">*</span> Birth Date</label
@@ -89,6 +129,10 @@
             mask="999-99-99-999"
             slotChar=" "
             formControlName="phoneNumber"
+            [ngClass]="{
+              'ng-invalid ng-dirty':
+                formSubmitted && form.get('phoneNumber')?.invalid
+            }"
           ></p-inputMask>
           <label for="phoneNumber"
             ><span class="required">*</span> Phone Number</label
