@@ -292,24 +292,6 @@ export class UserTableComponent implements OnInit {
   }
 
   onFilterApplied(event: any): void {
-    this.activeFilters = [];
-    const filters = event.filters;
-
-    Object.keys(filters).forEach((field) => {
-      const filterArray = filters[field]; // Each filter field contains an array
-      if (filterArray?.length) {
-        const filterValue = filterArray[0]?.value; // Accessing the actual value of the filter
-        if (filterValue) {
-          // Check if the filter value is an object (for example, a date or an array)
-          const valueToDisplay =
-            filterValue instanceof Object
-              ? JSON.stringify(filterValue)
-              : filterValue;
-          this.activeFilters.push({ field, value: valueToDisplay });
-        }
-      }
-    });
-
-    console.log('Active Filters:', this.activeFilters);
+    this.commonService.onFilterApplied(event, this.activeFilters);
   }
 }

@@ -1,0 +1,179 @@
+<div class="card mt-3 px-5 pb-5">
+  <!-- Table configuration -->
+  <p-toast />
+  <p-confirmPopup />
+  <p-table
+    #dt
+    [value]="ticketsToBeDisplayed"
+    dataKey="id"
+    [paginator]="true"
+    [rows]="pageSize"
+    [rowsPerPageOptions]="[10, 25, 50]"
+    styleClass="p-datatable-gridlines"
+    [lazy]="true"
+    [totalRecords]="totalElements"
+    [tableStyle]="{
+        'min-width': '75rem',
+        'table-layout': 'fixed',
+        }"
+    (onLazyLoad)="onPageChange($event)"
+    (onFilter)="onFilterApplied($event)"
+  >
+    <!-- Caption  -->
+    <ng-template pTemplate="caption">
+      <div class="grid">
+        <div class="col-6 flex flex-row">
+          <p-button
+            (onClick)="showDialog()"
+            label="Create Ticket"
+            class="mx-2"
+          />
+          <p-button
+            class="mx-2"
+            label="Clear"
+            [outlined]="true"
+            icon="pi pi-filter-slash"
+            (click)="clear(dt)"
+          />
+        </div>
+        <div class="col-6 text-right">
+          <ng-container *ngIf="activeFilters.length > 0">
+            <span class="p-text-secondary">
+              <strong>Active Filters:</strong>
+              <span *ngFor="let filter of activeFilters; let i = index">
+                {{ filter.field | titlecase }}:
+                <span *ngIf="commonService.isArray(filter.value)">{{
+                  filter.value.join(", ")
+                }}</span>
+                <span *ngIf="!commonService.isArray(filter.value)">{{
+                  filter.value
+                }}</span>
+                <span *ngIf="i < activeFilters.length - 1">|</span>
+              </span>
+            </span>
+          </ng-container>
+        </div>
+      </div>
+      <!-- Remove the comment once it's implemented -->
+      <!-- <app-ticket-dialog
+              [(visible)]="visible"
+              [editMode]="editMode"
+              [ticketToBeInserted]="ticketToBeInserted"
+              (save)="onSave($event.ticket, $event.editMode)"
+            ></app-ticket-dialog> -->
+    </ng-template>
+    <!-- Table Header with Pop-Up Filters -->
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width: 5%" class="px-2 text-center">ID</th>
+        <th style="width: 10%" class="px-0 text-center">
+          Model Name
+          <p-columnFilter
+            type="text"
+            field="modelName"
+            display="menu"
+            placeholder="Filter by Model Name"
+            [showOperator]="false"
+            [showAddButton]="false"
+          ></p-columnFilter>
+        </th>
+        <th style="width: 10%" class="px-0 text-center">
+          Issued By
+          <p-columnFilter
+            type="text"
+            field="username"
+            display="menu"
+            placeholder="Filter by Username"
+            [showOperator]="false"
+            [showAddButton]="false"
+          ></p-columnFilter>
+        </th>
+        <th style="width: 10%" class="px-0 text-center">
+          Title
+          <p-columnFilter
+            type="text"
+            field="title"
+            display="menu"
+            placeholder="Filter by Title"
+            [showOperator]="false"
+            [showAddButton]="false"
+          ></p-columnFilter>
+        </th>
+        <th style="width: 10%" class="px-0 text-center">
+          Status
+          <p-columnFilter
+            type="text"
+            field="status"
+            display="menu"
+            placeholder="Filter by Status"
+            [showOperator]="false"
+            [showAddButton]="false"
+          ></p-columnFilter>
+        </th>
+        <th style="width: 10%" class="px-0 text-center">
+          Priority
+          <p-columnFilter
+            type="text"
+            field="priority"
+            display="menu"
+            placeholder="Filter by Priority"
+            [showOperator]="false"
+            [showAddButton]="false"
+          ></p-columnFilter>
+        </th>
+        <th style="width: 10%" class="px-0 text-center">
+          Issued At
+          <p-columnFilter
+            type="date"
+            field="issuedAt"
+            display="menu"
+            placeholder="Filter by Issued At"
+            [showOperator]="false"
+            [showAddButton]="false"
+            [showApplyButton]="false"
+          ></p-columnFilter>
+        </th>
+        <th *ngIf="hasAdminRole()" style="width: 5%" class="px-0 text-center">
+          Resolve
+        </th>
+        <th style="width: 5%" class="px-0 text-center">Info</th>
+      </tr>
+    </ng-template>
+    <!-- Table Body -->
+    <ng-template pTemplate="body" let-ticket>
+      <tr>
+        <td class="text-center">{{ ticket.id }}</td>
+        <td class="text-center">{{ ticket.modelName }}</td>
+        <td class="text-center">{{ ticket.username }}</td>
+        <td class="text-center">{{ ticket.title }}</td>
+        <td class="text-center">{{ ticket.status }}</td>
+        <td class="text-center">{{ ticket.priority }}</td>
+        <td class="text-center">{{ ticket.issuedAt | date : "dd/MM/yyyy" }}</td>
+        <td *ngIf="hasAdminRole()">
+          <div class="flex justify-content-center">
+            <p-button
+              [rounded]="true"
+              (onClick)="showDialog(ticket)"
+              text="Resolve"
+              icon="pi pi-ticket"
+              severity="info"
+              aria-label="resolve"
+            />
+          </div>
+        </td>
+        <td>
+          <!-- add onClick -->
+          <div class="flex justify-content-center">
+            <p-button
+              [rounded]="true"
+              text="Info"
+              icon="pi pi-info-circle"
+              severity="info"
+              aria-label="info"
+            />
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

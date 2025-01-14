@@ -52,7 +52,7 @@ export class NavigationBarComponent implements OnInit {
         label: 'Assets',
         icon: 'pi pi-fw pi-folder',
         routerLink: '/assets',
-        roles: ['SUPER_ADMIN', 'SYSTEM_ADMIN'],
+        roles: ['SUPER_ADMIN', 'SYSTEM_ADMIN', 'USER'],
       },
       {
         label: 'Assets History',
@@ -64,7 +64,7 @@ export class NavigationBarComponent implements OnInit {
         label: 'Dashboard',
         icon: 'pi pi-fw pi-chart-bar',
         routerLink: '/dashboard',
-        roles: ['SUPER_ADMIN', 'SYSTEM_ADMIN'],
+        roles: ['SUPER_ADMIN', 'SYSTEM_ADMIN', 'USER'],
       },
     ];
 

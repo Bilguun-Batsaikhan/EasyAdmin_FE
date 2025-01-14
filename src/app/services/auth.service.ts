@@ -12,9 +12,11 @@ export class AuthService {
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  login(email: string, password: string): Observable<any> {
-    const loginData = { email, password };
-    console.log('Login Data: ' + loginData.email + ' ' + loginData.password);
+  login(identifier: string, password: string): Observable<any> {
+    const loginData = identifier.includes('@')
+      ? { email: identifier, password }
+      : { username: identifier, password };
+    console.log('Login Data:', loginData);
 
     return this.http
       .post<any>(`${this.baseUrl}${this.urlLogin}`, loginData)

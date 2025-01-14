@@ -4,7 +4,7 @@ export interface Asset {
   modelName: string;
   type: string;
   status: AssetStatus;
-  cost: number;
+  cost: number | null;
   username: string;
   userID?: number;
 }

@@ -53,6 +53,7 @@ export class CommonService {
       header: 'Confirmation',
       icon: 'pi pi-exclamation-triangle',
       target, // Optional parameter for attaching to a UI element
+      acceptButtonStyleClass: 'custom-accept-button',
       accept: acceptCallback,
       reject: rejectCallback,
     });
@@ -99,6 +100,7 @@ export class CommonService {
     );
   }
 
+  // this is for assetHistory
   loadData<T>(
     service: any,
     pageNo: number,
@@ -124,5 +126,27 @@ export class CommonService {
         throw error;
       })
     );
+  }
+
+  onFilterApplied(
+    event: any,
+    activeFilters: { field: string; value: any }[]
+  ): void {
+    const filters = event.filters;
+
+    Object.keys(filters).forEach((field) => {
+      const filterArray = filters[field]; // Each filter field contains an array
+      if (filterArray?.length) {
+        const filterValue = filterArray[0]?.value; // Accessing the actual value of the filter
+        if (filterValue) {
+          // Check if the filter value is an object (for example, a date or an array)
+          const valueToDisplay =
+            filterValue instanceof Object
+              ? JSON.stringify(filterValue)
+              : filterValue;
+          activeFilters.push({ field, value: valueToDisplay });
+        }
+      }
+    });
   }
 }

@@ -67,7 +67,7 @@ export class UserDialogComponent implements OnChanges {
     { role: userRoleEnum.SUPER_ADMIN, name: 'Super Admin' },
     { role: userRoleEnum.SYSTEM_ADMIN, name: 'System Admin' },
   ];
-
+  selectedRole: userRoleEnum | undefined;
   // Reactive form setup
   form: FormGroup = new FormGroup({
     username: new FormControl('', Validators.required),

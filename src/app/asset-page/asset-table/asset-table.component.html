@@ -24,7 +24,12 @@
     <ng-template pTemplate="caption">
       <div class="grid">
         <div class="col-6 flex flex-row">
-          <p-button (onClick)="showDialog()" label="Add Asset" class="mx-2" />
+          <p-button
+            *ngIf="hasAdminRole()"
+            (onClick)="showDialog()"
+            label="Add Asset"
+            class="mx-2"
+          />
           <p-button
             class="mx-2"
             label="Clear"
@@ -132,8 +137,12 @@
           ></p-columnFilter>
         </th>
 
-        <th style="width: 5%" class="px-0 text-center">Edit</th>
-        <th style="width: 5%" class="px-0 text-center">Del</th>
+        <th *ngIf="hasAdminRole()" style="width: 5%" class="px-0 text-center">
+          Edit
+        </th>
+        <th *ngIf="hasAdminRole()" style="width: 5%" class="px-0 text-center">
+          Del
+        </th>
         <th style="width: 5%" class="px-0 text-center">History</th>
       </tr>
     </ng-template>
@@ -157,7 +166,7 @@
           ></p-tag>
         </td>
         <td class="text-center">{{ asset.cost }}</td>
-        <td>
+        <td *ngIf="hasAdminRole()">
           <div class="flex justify-content-center">
             <p-button
               [rounded]="true"
@@ -169,7 +178,7 @@
             />
           </div>
         </td>
-        <td>
+        <td *ngIf="hasAdminRole()">
           <div class="flex justify-content-center">
             <p-button
               icon="pi pi-trash"
