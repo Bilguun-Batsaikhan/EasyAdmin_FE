@@ -24,9 +24,10 @@
       <div class="grid">
         <div class="col-6 flex flex-row">
           <p-button
-            (onClick)="showDialog()"
+            *ngIf="isUser()"
             label="Create Ticket"
             class="mx-2"
+            (click)="showDialog()"
           />
           <p-button
             class="mx-2"
@@ -108,7 +109,19 @@
             placeholder="Filter by Status"
             [showOperator]="false"
             [showAddButton]="false"
-          ></p-columnFilter>
+            [showMatchModes]="false"
+            [showApplyButton]="false"
+          >
+            <ng-template pTemplate="filter" let-filter="filterCallback">
+              <p-multiSelect
+                [options]="statusOptions"
+                [(ngModel)]="selectedStatus"
+                placeholder="Select Status"
+                [style]="{ 'min-width': '12rem', width: '100%' }"
+                (onChange)="filter($event.value)"
+              ></p-multiSelect>
+            </ng-template>
+          </p-columnFilter>
         </th>
         <th style="width: 10%" class="px-0 text-center">
           Priority
@@ -119,7 +132,19 @@
             placeholder="Filter by Priority"
             [showOperator]="false"
             [showAddButton]="false"
-          ></p-columnFilter>
+            [showMatchModes]="false"
+            [showApplyButton]="false"
+          >
+            <ng-template pTemplate="filter" let-filter="filterCallback">
+              <p-multiSelect
+                [options]="priorityOptions"
+                [(ngModel)]="selectedPriority"
+                placeholder="Select Priority"
+                [style]="{ 'min-width': '12rem', width: '100%' }"
+                (onChange)="filter($event.value)"
+              ></p-multiSelect>
+            </ng-template>
+          </p-columnFilter>
         </th>
         <th style="width: 10%" class="px-0 text-center">
           Issued At
@@ -146,8 +171,28 @@
         <td class="text-center">{{ ticket.modelName }}</td>
         <td class="text-center">{{ ticket.username }}</td>
         <td class="text-center">{{ ticket.title }}</td>
-        <td class="text-center">{{ ticket.status }}</td>
-        <td class="text-center">{{ ticket.priority }}</td>
+        <td class="text-center">
+          <p-tag
+            [value]="ticket.status"
+            [severity]="getSeverity(ticket.status)"
+            [style]="{
+              display: 'inline-block',
+              width: '100px',
+              'text-align': 'center'
+            }"
+          ></p-tag>
+        </td>
+        <td class="text-center">
+          <p-tag
+            [value]="ticket.priority"
+            [severity]="getSeverity(ticket.priority)"
+            [style]="{
+              display: 'inline-block',
+              width: '100px',
+              'text-align': 'center'
+            }"
+          ></p-tag>
+        </td>
         <td class="text-center">{{ ticket.issuedAt | date : "dd/MM/yyyy" }}</td>
         <td *ngIf="hasAdminRole()">
           <div class="flex justify-content-center">

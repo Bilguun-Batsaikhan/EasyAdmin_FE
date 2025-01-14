@@ -7,6 +7,7 @@ import {
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { Ticket } from '../interfaces/tickets';
+import { CreateTicket } from '../interfaces/createTicket';
 
 @Injectable({
   providedIn: 'root',
@@ -37,7 +38,6 @@ export class TicketsService {
         }
       }
     }
-
     const requestUrl = `${this.baseUrl}${this.urlTickets}?${queryParams}`;
     console.log('Request URL:', requestUrl);
 
@@ -49,6 +49,16 @@ export class TicketsService {
       })),
       catchError(this.handleError)
     );
+  }
+
+  postTicket(ticket: CreateTicket): Observable<string> {
+    const headers = new HttpHeaders().set('Content-Type', 'application/json');
+    return this.http
+      .post(`${this.baseUrl}${this.urlTickets}`, ticket, {
+        headers,
+        responseType: 'text',
+      })
+      .pipe(catchError(this.handleError));
   }
 
   private handleError(error: HttpErrorResponse): Observable<never> {

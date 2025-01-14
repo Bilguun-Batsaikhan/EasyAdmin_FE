@@ -4,6 +4,7 @@ import {
   Input,
   Output,
   OnChanges,
+  OnInit,
 } from '@angular/core';
 import {
   FormControl,
@@ -21,6 +22,8 @@ import { CommonModule } from '@angular/common';
 import { Asset } from '../../interfaces/assets';
 import { AssetStatus } from '../../enumeration/AssetStatus';
 import { FloatLabelModule } from 'primeng/floatlabel';
+import { UsersService } from '../../services/users.service';
+import { User } from '../../interfaces/users';
 
 @Component({
   selector: 'app-asset-dialog',
@@ -39,7 +42,7 @@ import { FloatLabelModule } from 'primeng/floatlabel';
   templateUrl: './asset-dialog.component.html',
   styleUrls: ['./asset-dialog.component.css'],
 })
-export class AssetDialogComponent implements OnChanges {
+export class AssetDialogComponent implements OnChanges, OnInit {
   @Input() visible: boolean = false;
   @Input() editMode: boolean = false;
   @Input() assetToBeInserted: Asset = {
@@ -59,16 +62,35 @@ export class AssetDialogComponent implements OnChanges {
     { status: AssetStatus.ASSIGNED, name: 'ASSIGNED' },
   ];
 
+  users: User[] = []; // Store the users
+  usernames: { label: string; value: string }[] = []; // Transform usernames
+
   // Reactive form setup
   form: FormGroup = new FormGroup({
     modelName: new FormControl('', Validators.required),
     type: new FormControl('', Validators.required),
     status: new FormControl(AssetStatus.AVAILABLE, Validators.required),
     cost: new FormControl(null, Validators.required),
-    userID: new FormControl(null),
+    username: new FormControl(null),
   });
 
   formSubmitted: boolean = false;
+
+  constructor(private userService: UsersService) {} // Inject the UserService
+
+  ngOnInit(): void {
+    const role = localStorage.getItem('role');
+    if (role === 'SUPER_ADMIN' || role === 'SYSTEM_ADMIN') {
+      this.userService.getUsers().subscribe((users) => {
+        this.users = users.data;
+        this.usernames = this.users.map((user) => ({
+          label: user.username,
+          value: user.id?.toString() || '', // Convert the user ID to a string
+        }));
+        console.log('Usernames:', this.usernames);
+      });
+    }
+  }
 
   ngOnChanges(): void {
     if (this.editMode && this.assetToBeInserted) {
@@ -88,18 +110,17 @@ export class AssetDialogComponent implements OnChanges {
     if (this.form.valid) {
       const formValues = this.form.value;
 
-      // Check if 'status' is empty, and if so, retain the current status value
-      // console.log('formValues:', formValues);
-      // console.log('formValues.status:', formValues.status);
-      // console.log(
-      //   'this.assetToBeInserted.status:',
-      //   this.assetToBeInserted.status
-      // );
-
+      console.log('Form values:', formValues.username);
+      const selectedUser = this.usernames.find(
+        (user) => user.label === formValues.username.label
+      );
+      console.log('Selected user:', selectedUser);
       const updatedAsset = {
         ...this.assetToBeInserted,
         ...formValues,
         status: formValues.status || this.assetToBeInserted.status,
+        username: selectedUser ? selectedUser.label : null, // Use the username
+        userID: selectedUser ? selectedUser.value : null, // Include the user ID
       };
 
       console.log('(dialog) updatedAsset:', updatedAsset);
@@ -122,7 +143,7 @@ export class AssetDialogComponent implements OnChanges {
       type: '',
       status: AssetStatus.AVAILABLE,
       cost: null,
-      userID: null,
+      username: null,
     });
     this.formSubmitted = false;
   }

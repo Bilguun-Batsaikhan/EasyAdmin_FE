@@ -41,7 +41,7 @@
             }"
           />
           <label for="new-password">
-            <span class="required">*</span>
+            <span *ngIf="!editMode" class="required">*</span>
             {{ form.get('password')?.errors?.['minlength'] ? 'Must be at least 8 char long.' : 'Password' }}
           </label>
         </p-floatLabel>

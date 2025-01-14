@@ -74,17 +74,19 @@
       </div>
       <div class="card flex justify-content-center">
         <p-floatLabel>
-          <input
-            pInputText
-            type="number"
-            id="user-id"
-            formControlName="userID"
+          <p-dropdown
+            id="username"
+            class="fixed-dropdown"
+            [options]="usernames"
+            formControlName="username"
+            optionLabel="label"
+            placeholder="Select a User"
             [ngClass]="{
               'ng-invalid ng-dirty':
-                formSubmitted && form.get('userID')?.invalid
+                formSubmitted && form.get('username')?.invalid
             }"
-          />
-          <label for="user-id">User ID</label>
+          ></p-dropdown>
+          <label for="username">User</label>
         </p-floatLabel>
       </div>
       <div class="card flex justify-content-center gap-2">

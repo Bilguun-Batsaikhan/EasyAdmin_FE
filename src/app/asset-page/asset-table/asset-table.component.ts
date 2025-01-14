@@ -225,48 +225,51 @@ export class AssetTableComponent {
   }
 
   onSave(asset: any, edit: boolean): void {
-    console.log('Before conversion:', asset);
     asset = this.convertAssetForServer(asset);
-    console.log('After conversion:', asset);
+
     if (edit) {
       console.log('Edit asset:', asset);
-      this.assetsService.patchAsset(asset).subscribe(
-        (updatedAsset: Asset) => {
+      this.assetsService.patchAsset(asset).subscribe({
+        next: (updatedAsset: Asset) => {
           if (updatedAsset.userID) {
             // Fetch the username if userID exists
-            this.usersService.getUser(updatedAsset.userID).subscribe(
-              (user: User) => {
-                updatedAsset.username = user.username;
-                this.updateTableRow(updatedAsset); // Update the specific row in the table with the returned asset
-                this.commonService.successMessage('Asset updated successfully');
-                this.visible = false; // Close the dialog
-              },
-              (error) => {
-                this.commonService.errorMessage(error);
-              }
-            );
+            if (localStorage) {
+              this.usersService.getUser(updatedAsset.userID).subscribe({
+                next: (user: User) => {
+                  updatedAsset.username = user.username;
+                  this.updateTableRow(updatedAsset); // Update the specific row in the table with the returned asset
+                  this.commonService.successMessage(
+                    'Asset updated successfully'
+                  );
+                  this.visible = false; // Close the dialog
+                },
+                error: (error) => {
+                  this.commonService.errorMessage(error);
+                },
+              });
+            }
           } else {
             this.updateTableRow(updatedAsset); // Update the specific row in the table without fetching username
             this.commonService.successMessage('Asset updated successfully');
             this.visible = false; // Close the dialog
           }
         },
-        (error) => {
+        error: (error) => {
           this.commonService.errorMessage(error);
-        }
-      );
+        },
+      });
     } else {
-      console.log('Save user:', asset);
-      this.assetsService.postAsset(asset).subscribe(
-        (response: string) => {
+      console.log('Save asset:', asset);
+      this.assetsService.postAsset(asset).subscribe({
+        next: (response: string) => {
           this.addTableRow(asset); // Add a new row to the table
           this.commonService.successMessage('Asset added successfully');
           this.visible = false; // Close the dialog
         },
-        (error) => {
+        error: (error) => {
           this.commonService.errorMessage(error);
-        }
-      );
+        },
+      });
     }
   }
 
