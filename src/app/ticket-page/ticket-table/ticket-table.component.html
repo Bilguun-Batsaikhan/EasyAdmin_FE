@@ -216,10 +216,69 @@
     </ng-template>
   </p-table>
 </div>
+<p-dialog
+  header="Resolve Ticket"
+  [(visible)]="visibleResolve"
+  [modal]="true"
+  [closable]="true"
+  [style]="{ width: '50vw' }"
+  (onHide)="onCancel()"
+  ngClass="p-0"
+>
+  <div class="grid justify-content-center mb-5">
+    <div class="col-6 bg-container border-round">
+      <form [formGroup]="form" (ngSubmit)="onResolve()">
+        <div class="field col-12 submit-description">
+          <label for="description"
+            ><span class="required">*</span>Description</label
+          >
+          <textarea
+            id="description"
+            formControlName="context"
+            rows="12"
+            class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"
+            [ngClass]="{
+              'border-red-500': formSubmitted && form.get('context')?.invalid
+            }"
+          ></textarea>
+        </div>
+        <div class="card flex justify-content-center">
+          <button
+            pButton
+            type="submit"
+            styleClass="px-5"
+            label="Submit"
+            [loading]="loading"
+          ></button>
+        </div>
+      </form>
+    </div>
+    <div class="col-6 bg-container border-round">
+      <p-panel [header]="ticketInfo.title">
+        <p><strong>Model Name:</strong> {{ ticketInfo.modelName }}</p>
+        <p><strong>Username:</strong> {{ ticketInfo.username }}</p>
+        <p><strong>Context:</strong> {{ ticketInfo.context }}</p>
+        <p><strong>Type:</strong> {{ ticketInfo.ticketType }}</p>
+        <p><strong>Status:</strong> {{ ticketInfo.status }}</p>
+        <p><strong>Priority:</strong> {{ ticketInfo.priority }}</p>
+        <p><strong>Issued At:</strong> {{ ticketInfo.issuedAt | date }}</p>
+        <p><strong>Closed At:</strong> {{ ticketInfo.closedAt | date }}</p>
+        <p>
+          <strong>Resolution Details:</strong>
+          {{ ticketInfo.resolutionDetails }}
+        </p>
+        <p>
+          <strong>Last Updated At:</strong>
+          {{ ticketInfo.lastUpdatedAt | date }}
+        </p>
+      </p-panel>
+    </div>
+  </div>
+</p-dialog>
 
 <p-dialog
   header="Ticket Details"
-  [(visible)]="visible"
+  [(visible)]="visibleDetails"
   [modal]="true"
   [closable]="true"
   [style]="{ width: '50vw' }"

@@ -26,6 +26,6 @@ export class AppComponent {
   }
   ngOnInit(): void {
     // Clear local storage on application start
-    // localStorage.clear();
+    localStorage.clear();
   }
 }

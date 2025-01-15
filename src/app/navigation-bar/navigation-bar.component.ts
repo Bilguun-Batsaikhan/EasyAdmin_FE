@@ -46,7 +46,7 @@ export class NavigationBarComponent implements OnInit {
         label: 'Users',
         icon: 'pi pi-fw pi-users',
         routerLink: '/users',
-        roles: ['SUPER_ADMIN'],
+        roles: ['SUPER_ADMIN', 'SYSTEM_ADMIN'],
       },
       {
         label: 'Assets',

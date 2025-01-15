@@ -1,0 +1,12 @@
+textarea.border-red-500 {
+  border-color: var(--red-500) !important;
+}
+.required {
+  color: red;
+  margin-right: 0.25rem;
+}
+:host ::ng-deep .p-dialog .p-dialog-content {
+  background: #ffffff;
+  color: #4b5563;
+  padding: 0 0.5rem 1rem 0.5rem;
+}
