@@ -1,1 +1,39 @@
-<p>ticket-close works!</p>
+<app-navigation-bar></app-navigation-bar>
+<p-toast />
+<p-confirmPopup />
+<div class="submit-container">
+  <h1 class="submit-title">Submit a request</h1>
+  <p class="submit-description">
+    From tech to tilt, we're here to help you! Submit a Ticket! So long as it
+    doesn't fall through a portal, we'll get back to you soon.
+  </p>
+</div>
+<div class="grid justify-content-center mb-5">
+  <div class="col-6 bg-container border-round p-3 shadow-2">
+    <form>
+      <div class="formgrid grid">
+        <div class="field col-12 submit-description">
+          <label for="description"
+            ><span class="required">*</span>Description</label
+          >
+          <textarea
+            id="description"
+            formControlName="context"
+            rows="4"
+            class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"
+          ></textarea>
+        </div>
+      </div>
+      <div class="card flex justify-content-center">
+        <button
+          pButton
+          type="submit"
+          styleClass="px-5"
+          label="Submit"
+          [loading]="loading"
+        ></button>
+      </div>
+    </form>
+  </div>
+</div>
+<app-footer></app-footer>

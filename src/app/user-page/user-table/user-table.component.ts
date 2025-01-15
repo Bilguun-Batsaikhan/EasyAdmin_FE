@@ -294,4 +294,8 @@ export class UserTableComponent implements OnInit {
   onFilterApplied(event: any): void {
     this.commonService.onFilterApplied(event, this.activeFilters);
   }
+
+  isSuperAdmin(): boolean {
+    return localStorage.getItem('role') === 'SUPER_ADMIN';
+  }
 }

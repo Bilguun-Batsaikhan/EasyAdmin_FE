@@ -1,6 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
@@ -51,6 +57,7 @@ import { Router } from '@angular/router';
     FloatLabelModule,
     InputMaskModule,
     PanelModule,
+    ReactiveFormsModule,
   ],
 
   providers: [
@@ -71,12 +78,19 @@ export class TicketTableComponent {
     protected commonService: CommonService
   ) {}
 
+  form: FormGroup = new FormGroup({
+    context: new FormControl('', Validators.required),
+  });
+
   pageNo: number = 0;
   pageSize: number = 10;
   totalElements: number = 0;
   totalPages: number = 0;
 
-  visible: boolean = false;
+  loading: boolean = false;
+  formSubmitted: boolean = false;
+  visibleDetails: boolean = false;
+  visibleResolve: boolean = false;
   editMode: boolean = false;
   selectedStatus: string[] = [];
   selectedPriority: string[] = [];
@@ -128,6 +142,7 @@ export class TicketTableComponent {
   };
 
   ngOnInit() {
+    this.formSubmitted = false;
     this.loadTickets();
   }
 
@@ -199,13 +214,38 @@ export class TicketTableComponent {
       this.resetTicketForm();
       this.router.navigate(['/ticket-open']);
     }
-    this.visible = true;
+    this.visibleDetails = true;
   }
 
   resolveTicket(ticket: Ticket) {
-    this.router.navigate(['/ticket-close']);
+    this.ticketToBeInserted = { ...ticket };
+    this.mapTicketToTicketInfo(ticket);
+    this.visibleResolve = true;
   }
 
+  onResolve() {
+    this.formSubmitted = true;
+    if (this.form.valid) {
+      this.loading = true;
+      const ticketToBeUpdated: any = {
+        id: this.ticketToBeInserted.id,
+        status: 'CLOSED',
+        resolutionDetails: this.form.get('context')?.value,
+      };
+      console.log('Ticket to be updated:', ticketToBeUpdated);
+      this.ticketService.patchTicket(ticketToBeUpdated).subscribe({
+        next: (response) => {
+          this.commonService.successMessage('Ticket resolved successfully');
+          this.loading = false;
+          this.visibleResolve = false;
+          this.loadTickets();
+        },
+        error: (error) => {
+          this.commonService.errorMessage('Failed to resolve ticket');
+        },
+      });
+    }
+  }
   mapTicketToTicketInfo(ticket: TicketsToBeDisplayed): void {
     // find the ticket from the list of tickets by id
     const ticketComplete = this.tickets.find((t) => t.id === ticket.id);
@@ -228,7 +268,7 @@ export class TicketTableComponent {
   }
 
   onCancel(): void {
-    this.visible = false;
+    this.visibleDetails = false;
   }
 
   resetTicketForm(): void {

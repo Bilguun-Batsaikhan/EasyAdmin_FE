@@ -8,6 +8,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { Ticket } from '../interfaces/tickets';
 import { CreateTicket } from '../interfaces/createTicket';
+import { TicketStatus } from '../enumeration/TicketStatus';
 
 @Injectable({
   providedIn: 'root',
@@ -55,6 +56,24 @@ export class TicketsService {
     const headers = new HttpHeaders().set('Content-Type', 'application/json');
     return this.http
       .post(`${this.baseUrl}${this.urlTickets}`, ticket, {
+        headers,
+        responseType: 'text',
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  patchTicket(ticket: {
+    id: number;
+    status: TicketStatus;
+    resolutionDetails: string;
+  }): Observable<string> {
+    const headers = new HttpHeaders().set('Content-Type', 'application/json');
+    const updateTicket = {
+      resolutionDetails: ticket.resolutionDetails,
+      status: ticket.status,
+    };
+    return this.http
+      .patch(`${this.baseUrl}${this.urlTickets}/${ticket.id}`, updateTicket, {
         headers,
         responseType: 'text',
       })

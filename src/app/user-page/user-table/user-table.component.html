@@ -23,7 +23,12 @@
     <ng-template pTemplate="caption">
       <div class="grid">
         <div class="col-6 flex flex-row">
-          <p-button (onClick)="showDialog()" label="Add User" class="mx-2" />
+          <p-button
+            *ngIf="isSuperAdmin()"
+            (onClick)="showDialog()"
+            label="Add User"
+            class="mx-2"
+          />
           <p-button
             class="mx-2"
             label="Clear"
@@ -181,6 +186,7 @@
         <td>
           <div class="flex justify-content-center">
             <p-button
+              [disabled]="!isSuperAdmin()"
               [rounded]="true"
               (onClick)="showDialog(user)"
               text="Edit"
@@ -193,6 +199,7 @@
         <td>
           <div class="flex justify-content-center">
             <p-button
+              [disabled]="!isSuperAdmin()"
               icon="pi pi-trash"
               [rounded]="true"
               text="Delete"
