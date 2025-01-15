@@ -71,10 +71,7 @@ export class UserDialogComponent implements OnChanges {
   // Reactive form setup
   form: FormGroup = new FormGroup({
     username: new FormControl('', Validators.required),
-    password: new FormControl('', [
-      Validators.required,
-      Validators.minLength(8),
-    ]),
+    password: new FormControl('', this.getPasswordValidators()),
     email: new FormControl('', [Validators.required, Validators.email]),
     phoneNumber: new FormControl('', Validators.required),
     role: new FormControl(userRoleEnum.USER, Validators.required),
@@ -83,11 +80,22 @@ export class UserDialogComponent implements OnChanges {
     birthdate: new FormControl(null, Validators.required),
   });
 
+  getPasswordValidators() {
+    const validators = [Validators.minLength(8)];
+    if (!this.editMode) {
+      validators.push(Validators.required);
+    }
+    return validators;
+  }
+
   formSubmitted: boolean = false;
 
   ngOnChanges(): void {
     if (this.editMode && this.userToBeInserted) {
       this.form.patchValue(this.userToBeInserted);
+
+      this.form.get('password')?.setValidators(this.getPasswordValidators());
+      this.form.get('password')?.updateValueAndValidity();
     } else {
       this.resetUserForm();
     }
@@ -99,6 +107,11 @@ export class UserDialogComponent implements OnChanges {
   }
 
   onSave(): void {
+    console.log('Edit mode ', this.editMode);
+    if (this.editMode == false) {
+      this.form.get('password')?.setValidators(this.getPasswordValidators());
+      this.form.get('password')?.updateValueAndValidity();
+    }
     this.formSubmitted = true;
     if (this.form.valid) {
       this.save.emit({

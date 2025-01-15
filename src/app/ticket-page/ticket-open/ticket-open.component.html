@@ -1,0 +1,113 @@
+<app-navigation-bar></app-navigation-bar>
+<p-toast />
+<p-confirmPopup />
+<div class="submit-container">
+  <h1 class="submit-title">Submit a request</h1>
+  <p class="submit-description">
+    From tech to tilt, we're here to help you! Submit a Ticket! So long as it
+    doesn't fall through a portal, we'll get back to you soon.
+  </p>
+</div>
+<div class="grid justify-content-center mb-5">
+  <div class="col-6 bg-container border-round p-3 shadow-2">
+    <form [formGroup]="form" (ngSubmit)="onSave()">
+      <div class="formgrid grid">
+        <div class="field col-12 md:col-3 submit-description">
+          <label for="ticket-type"
+            ><span class="required">*</span>Ticket Type</label
+          >
+          <select
+            id="ticket-type"
+            formControlName="ticketType"
+            class="w-full text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round outline-none focus:border-primary"
+            style="appearance: auto"
+            [ngClass]="{
+              'border-red-500': formSubmitted && form.get('title')?.invalid
+            }"
+          >
+            <option
+              *ngFor="let type of TicketType | keyvalue"
+              [value]="type.value"
+            >
+              {{ type.key }}
+            </option>
+          </select>
+        </div>
+        <div class="field col-12 md:col-3 submit-description">
+          <label for="priority"><span class="required">*</span>Priority</label>
+          <select
+            id="priority"
+            formControlName="priority"
+            class="w-full text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round outline-none focus:border-primary"
+            style="appearance: auto"
+            [ngClass]="{
+              'border-red-500': formSubmitted && form.get('title')?.invalid
+            }"
+          >
+            <option
+              *ngFor="let priority of TicketPriority | keyvalue"
+              [value]="priority.value"
+            >
+              {{ priority.key }}
+            </option>
+          </select>
+        </div>
+        <div class="field col-12 md:col-8 submit-description">
+          <label for="title"><span class="required">*</span>Title</label>
+          <input
+            id="title"
+            type="text"
+            formControlName="title"
+            class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"
+            [ngClass]="{
+              'border-red-500': formSubmitted && form.get('title')?.invalid
+            }"
+          />
+        </div>
+        <div class="field col-12 md:col-4 submit-description">
+          <label for="asset-id"
+            ><span class="required">*</span>Choose your asset</label
+          >
+          <select
+            id="asset-id"
+            formControlName="assetId"
+            class="w-full text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round outline-none focus:border-primary"
+            style="appearance: auto"
+            [ngClass]="{
+              'border-red-500': formSubmitted && form.get('title')?.invalid
+            }"
+          >
+            <option *ngFor="let asset of assets" [value]="asset.id">
+              {{ asset.modelName }}
+            </option>
+          </select>
+        </div>
+        <div class="field col-12 submit-description">
+          <label for="description"
+            ><span class="required">*</span>Description</label
+          >
+          <textarea
+            id="description"
+            formControlName="context"
+            rows="4"
+            class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"
+            [ngClass]="{
+              'border-red-500': formSubmitted && form.get('title')?.invalid
+            }"
+          ></textarea>
+        </div>
+      </div>
+      <div class="card flex justify-content-center">
+        <button
+          pButton
+          type="submit"
+          styleClass="px-5"
+          label="Submit"
+          [loading]="loading"
+        ></button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<app-footer></app-footer>

@@ -28,6 +28,8 @@ import { TicketStatus } from '../../enumeration/TicketStatus';
 import { TicketPriority } from '../../enumeration/TicketPriority';
 import { TicketsService } from '../../services/tickets.service';
 import { TicketsToBeDisplayed } from '../../interfaces/ticketsToBeDisplayed';
+import { PanelModule } from 'primeng/panel';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-ticket-table',
   standalone: true,
@@ -48,6 +50,7 @@ import { TicketsToBeDisplayed } from '../../interfaces/ticketsToBeDisplayed';
     PasswordModule,
     FloatLabelModule,
     InputMaskModule,
+    PanelModule,
   ],
 
   providers: [
@@ -61,6 +64,7 @@ import { TicketsToBeDisplayed } from '../../interfaces/ticketsToBeDisplayed';
 })
 export class TicketTableComponent {
   constructor(
+    private router: Router,
     private ticketService: TicketsService,
     private confirmationService: ConfirmationService,
     private messageService: MessageService,
@@ -74,10 +78,39 @@ export class TicketTableComponent {
 
   visible: boolean = false;
   editMode: boolean = false;
-
+  selectedStatus: string[] = [];
+  selectedPriority: string[] = [];
   activeFilters: { field: string; value: any }[] = [];
   tickets: Ticket[] = [];
   ticketsToBeDisplayed: TicketsToBeDisplayed[] = [];
+
+  ticketInfo: Ticket = {
+    id: 0,
+    modelName: '',
+    username: '',
+    title: '',
+    context: '',
+    ticketType: TicketType.REQUEST,
+    status: TicketStatus.OPEN,
+    priority: TicketPriority.MEDIUM,
+    issuedAt: null,
+    closedAt: null,
+    resolutionDetails: '',
+    lastUpdatedAt: null,
+  };
+
+  // Ticket status options
+  statusOptions = [
+    { label: 'OPEN', value: 'OPEN' },
+    { label: 'CLOSED', value: 'CLOSED' },
+  ];
+
+  // Ticket priority options
+  priorityOptions = [
+    { label: 'LOW', value: 'LOW' },
+    { label: 'MEDIUM', value: 'MEDIUM' },
+    { label: 'HIGH', value: 'HIGH' },
+  ];
 
   ticketToBeInserted: Ticket = {
     id: 0,
@@ -150,15 +183,52 @@ export class TicketTableComponent {
     this.activeFilters = [];
   }
 
-  showDialog(ticket: any = null): void {
+  isUser(): boolean {
+    return localStorage.getItem('role') === 'USER';
+  }
+
+  showDialog(ticket: TicketsToBeDisplayed | any = null): void {
+    console.log('Ticket:', ticket); // ticket of type TicketsToBeDisplayed
     if (ticket) {
       this.editMode = true;
       this.ticketToBeInserted = { ...ticket };
+      this.mapTicketToTicketInfo(ticket);
     } else {
+      console.log('Insert Mode');
       this.editMode = false;
       this.resetTicketForm();
+      this.router.navigate(['/ticket-open']);
     }
     this.visible = true;
+  }
+
+  resolveTicket(ticket: Ticket) {
+    this.router.navigate(['/ticket-close']);
+  }
+
+  mapTicketToTicketInfo(ticket: TicketsToBeDisplayed): void {
+    // find the ticket from the list of tickets by id
+    const ticketComplete = this.tickets.find((t) => t.id === ticket.id);
+    if (ticketComplete) {
+      this.ticketInfo = {
+        id: ticketComplete.id,
+        modelName: ticketComplete.modelName,
+        username: ticketComplete.username,
+        title: ticketComplete.title,
+        context: ticketComplete.context,
+        ticketType: ticketComplete.ticketType,
+        status: ticketComplete.status,
+        priority: ticketComplete.priority,
+        issuedAt: ticketComplete.issuedAt,
+        closedAt: ticketComplete.closedAt,
+        resolutionDetails: ticketComplete.resolutionDetails,
+        lastUpdatedAt: ticketComplete.lastUpdatedAt,
+      };
+    }
+  }
+
+  onCancel(): void {
+    this.visible = false;
   }
 
   resetTicketForm(): void {
@@ -193,5 +263,32 @@ export class TicketTableComponent {
   hasAdminRole(): boolean {
     const role = localStorage.getItem('role');
     return role === 'SYSTEM_ADMIN' || role === 'SUPER_ADMIN';
+  }
+
+  getSeverity(
+    status: string
+  ):
+    | 'success'
+    | 'secondary'
+    | 'info'
+    | 'warning'
+    | 'danger'
+    | 'contrast'
+    | undefined {
+    switch (status) {
+      case 'CLOSED':
+      case 'LOW':
+        return 'success';
+
+      case 'OPEN':
+      case 'MEDIUM':
+        return 'info';
+
+      case 'HIGH':
+        return 'danger';
+
+      default:
+        return undefined;
+    }
   }
 }

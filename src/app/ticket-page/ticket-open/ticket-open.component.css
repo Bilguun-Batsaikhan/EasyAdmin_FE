@@ -1,0 +1,37 @@
+.submit-container {
+  text-align: center;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+.submit-title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.submit-description {
+  font-size: 1.2rem;
+  color: #555;
+  line-height: 1.5;
+}
+.bg-container {
+  background-color: #f7f9fc;
+  border: 1px solid #dfe3e8;
+}
+.required {
+  color: red;
+  margin-right: 0.25rem;
+}
+
+input.border-red-500 {
+  border-color: var(--red-500) !important;
+}
+
+textarea.border-red-500 {
+  border-color: var(--red-500) !important;
+}
+
+select.border-red-500 {
+  border-color: var(--red-500) !important;
+}

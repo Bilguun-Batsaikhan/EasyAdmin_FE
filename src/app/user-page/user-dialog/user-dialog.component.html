@@ -1,5 +1,5 @@
 <p-dialog
-  header="Insert User"
+  [header]="editMode ? 'Edit User' : 'Insert User'"
   [modal]="true"
   [(visible)]="visible"
   [style]="{ width: '40rem', height: 'auto' }"
@@ -41,7 +41,7 @@
             }"
           />
           <label for="new-password">
-            <span class="required">*</span>
+            <span *ngIf="!editMode" class="required">*</span>
             {{ form.get('password')?.errors?.['minlength'] ? 'Must be at least 8 char long.' : 'Password' }}
           </label>
         </p-floatLabel>
@@ -86,12 +86,12 @@
           [checkmark]="true"
           [showClear]="true"
           optionLabel="name"
-          placeholder="Select a Role"
+          placeholder="USER"
           aria-describedby="role-help"
         >
           ></p-dropdown
         >
-        <small id="role-help"> Default value is user. </small>
+        <small id="role-help"> Select a role from drop down. </small>
       </div>
       <div class="card flex justify-content-center">
         <p-floatLabel>
