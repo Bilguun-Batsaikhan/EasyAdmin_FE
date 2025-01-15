@@ -1,5 +1,5 @@
 <p-dialog
-  header="Insert Asset"
+  [header]="editMode ? 'Edit Asset' : 'Insert Asset'"
   [modal]="true"
   [(visible)]="visible"
   [style]="{ width: '25rem' }"
@@ -53,10 +53,10 @@
           [checkmark]="true"
           [showClear]="true"
           optionLabel="name"
-          placeholder="Select a Status"
+          placeholder="AVAILABLE"
           aria-describedby="status-help"
         ></p-dropdown>
-        <small id="status-help"> Default value is available. </small>
+        <small id="status-help"> Select a status from dropdown. </small>
       </div>
       <div class="card flex justify-content-center">
         <p-floatLabel>
@@ -82,13 +82,14 @@
             optionLabel="label"
             placeholder="Select a User"
             [ngClass]="{
-              'ng-invalid ng-dirty':
-                formSubmitted && form.get('username')?.invalid
+              'ng-invalid': formSubmitted && form.get('username')?.invalid,
+              'ng-dirty': formSubmitted
             }"
           ></p-dropdown>
-          <label for="username">User</label>
+          <label for="username">Select User</label>
         </p-floatLabel>
       </div>
+
       <div class="card flex justify-content-center gap-2">
         <p-button label="Cancel" severity="secondary" (onClick)="onCancel()" />
         <p-button label="Save" type="submit" />

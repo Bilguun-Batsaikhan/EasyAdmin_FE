@@ -39,6 +39,7 @@ import { Router } from '@angular/router';
 })
 export class TicketOpenComponent implements OnInit {
   loading: boolean = false;
+  formSubmitted: boolean = false;
   width: string | undefined;
 
   TicketPriority = {
@@ -70,12 +71,16 @@ export class TicketOpenComponent implements OnInit {
   ) {} // Inject the service
 
   ngOnInit() {
+    this.formSubmitted = false;
     this.assetService.getAssets().subscribe((assets) => {
       this.assets = assets.data;
     });
   }
 
   onSave() {
+    this.formSubmitted = true;
+    console.log('Form submitted ', this.formSubmitted);
+    console.log('Form invalid ', this.form.get('title')?.invalid);
     if (this.form.valid) {
       this.loading = true;
       const ticketToBeInserted: CreateTicket = this.form.value;

@@ -19,3 +19,19 @@
   background-color: #f7f9fc;
   border: 1px solid #dfe3e8;
 }
+.required {
+  color: red;
+  margin-right: 0.25rem;
+}
+
+input.border-red-500 {
+  border-color: var(--red-500) !important;
+}
+
+textarea.border-red-500 {
+  border-color: var(--red-500) !important;
+}
+
+select.border-red-500 {
+  border-color: var(--red-500) !important;
+}

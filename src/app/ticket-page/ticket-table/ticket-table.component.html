@@ -55,13 +55,6 @@
           </ng-container>
         </div>
       </div>
-      <!-- Remove the comment once it's implemented -->
-      <!-- <app-ticket-dialog
-              [(visible)]="visible"
-              [editMode]="editMode"
-              [ticketToBeInserted]="ticketToBeInserted"
-              (save)="onSave($event.ticket, $event.editMode)"
-            ></app-ticket-dialog> -->
     </ng-template>
     <!-- Table Header with Pop-Up Filters -->
     <ng-template pTemplate="header">
@@ -198,7 +191,7 @@
           <div class="flex justify-content-center">
             <p-button
               [rounded]="true"
-              (onClick)="showDialog(ticket)"
+              (onClick)="resolveTicket(ticket)"
               text="Resolve"
               icon="pi pi-ticket"
               severity="info"
@@ -211,6 +204,7 @@
           <div class="flex justify-content-center">
             <p-button
               [rounded]="true"
+              (onClick)="showDialog(ticket)"
               text="Info"
               icon="pi pi-info-circle"
               severity="info"
@@ -222,3 +216,33 @@
     </ng-template>
   </p-table>
 </div>
+
+<p-dialog
+  header="Ticket Details"
+  [(visible)]="visible"
+  [modal]="true"
+  [closable]="true"
+  [style]="{ width: '50vw' }"
+  (onHide)="onCancel()"
+>
+  <div *ngIf="ticketInfo">
+    <p-panel [header]="ticketInfo.title">
+      <p><strong>Model Name:</strong> {{ ticketInfo.modelName }}</p>
+      <p><strong>Username:</strong> {{ ticketInfo.username }}</p>
+      <p><strong>Context:</strong> {{ ticketInfo.context }}</p>
+      <p><strong>Type:</strong> {{ ticketInfo.ticketType }}</p>
+      <p><strong>Status:</strong> {{ ticketInfo.status }}</p>
+      <p><strong>Priority:</strong> {{ ticketInfo.priority }}</p>
+      <p><strong>Issued At:</strong> {{ ticketInfo.issuedAt | date }}</p>
+      <p><strong>Closed At:</strong> {{ ticketInfo.closedAt | date }}</p>
+      <p>
+        <strong>Resolution Details:</strong>
+        {{ ticketInfo.resolutionDetails }}
+      </p>
+      <p>
+        <strong>Last Updated At:</strong>
+        {{ ticketInfo.lastUpdatedAt | date }}
+      </p>
+    </p-panel>
+  </div>
+</p-dialog>

@@ -28,6 +28,7 @@ import { TicketStatus } from '../../enumeration/TicketStatus';
 import { TicketPriority } from '../../enumeration/TicketPriority';
 import { TicketsService } from '../../services/tickets.service';
 import { TicketsToBeDisplayed } from '../../interfaces/ticketsToBeDisplayed';
+import { PanelModule } from 'primeng/panel';
 import { Router } from '@angular/router';
 @Component({
   selector: 'app-ticket-table',
@@ -49,6 +50,7 @@ import { Router } from '@angular/router';
     PasswordModule,
     FloatLabelModule,
     InputMaskModule,
+    PanelModule,
   ],
 
   providers: [
@@ -81,6 +83,21 @@ export class TicketTableComponent {
   activeFilters: { field: string; value: any }[] = [];
   tickets: Ticket[] = [];
   ticketsToBeDisplayed: TicketsToBeDisplayed[] = [];
+
+  ticketInfo: Ticket = {
+    id: 0,
+    modelName: '',
+    username: '',
+    title: '',
+    context: '',
+    ticketType: TicketType.REQUEST,
+    status: TicketStatus.OPEN,
+    priority: TicketPriority.MEDIUM,
+    issuedAt: null,
+    closedAt: null,
+    resolutionDetails: '',
+    lastUpdatedAt: null,
+  };
 
   // Ticket status options
   statusOptions = [
@@ -170,11 +187,12 @@ export class TicketTableComponent {
     return localStorage.getItem('role') === 'USER';
   }
 
-  showDialog(ticket: any = null): void {
-    console.log('Ticket:', ticket);
+  showDialog(ticket: TicketsToBeDisplayed | any = null): void {
+    console.log('Ticket:', ticket); // ticket of type TicketsToBeDisplayed
     if (ticket) {
       this.editMode = true;
       this.ticketToBeInserted = { ...ticket };
+      this.mapTicketToTicketInfo(ticket);
     } else {
       console.log('Insert Mode');
       this.editMode = false;
@@ -182,6 +200,35 @@ export class TicketTableComponent {
       this.router.navigate(['/ticket-open']);
     }
     this.visible = true;
+  }
+
+  resolveTicket(ticket: Ticket) {
+    this.router.navigate(['/ticket-close']);
+  }
+
+  mapTicketToTicketInfo(ticket: TicketsToBeDisplayed): void {
+    // find the ticket from the list of tickets by id
+    const ticketComplete = this.tickets.find((t) => t.id === ticket.id);
+    if (ticketComplete) {
+      this.ticketInfo = {
+        id: ticketComplete.id,
+        modelName: ticketComplete.modelName,
+        username: ticketComplete.username,
+        title: ticketComplete.title,
+        context: ticketComplete.context,
+        ticketType: ticketComplete.ticketType,
+        status: ticketComplete.status,
+        priority: ticketComplete.priority,
+        issuedAt: ticketComplete.issuedAt,
+        closedAt: ticketComplete.closedAt,
+        resolutionDetails: ticketComplete.resolutionDetails,
+        lastUpdatedAt: ticketComplete.lastUpdatedAt,
+      };
+    }
+  }
+
+  onCancel(): void {
+    this.visible = false;
   }
 
   resetTicketForm(): void {

@@ -4,3 +4,12 @@
 .required {
   color: red;
 }
+
+.p-dropdown.ng-invalid {
+  border: 1px solid red !important;
+  border-radius: 4px;
+}
+
+.p-dropdown.ng-invalid .p-dropdown-label {
+  color: red !important;
+}

@@ -13,12 +13,17 @@
     <form [formGroup]="form" (ngSubmit)="onSave()">
       <div class="formgrid grid">
         <div class="field col-12 md:col-3 submit-description">
-          <label for="ticket-type">Ticket Type</label>
+          <label for="ticket-type"
+            ><span class="required">*</span>Ticket Type</label
+          >
           <select
             id="ticket-type"
             formControlName="ticketType"
             class="w-full text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round outline-none focus:border-primary"
             style="appearance: auto"
+            [ngClass]="{
+              'border-red-500': formSubmitted && form.get('title')?.invalid
+            }"
           >
             <option
               *ngFor="let type of TicketType | keyvalue"
@@ -29,12 +34,15 @@
           </select>
         </div>
         <div class="field col-12 md:col-3 submit-description">
-          <label for="priority">Priority</label>
+          <label for="priority"><span class="required">*</span>Priority</label>
           <select
             id="priority"
             formControlName="priority"
             class="w-full text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round outline-none focus:border-primary"
             style="appearance: auto"
+            [ngClass]="{
+              'border-red-500': formSubmitted && form.get('title')?.invalid
+            }"
           >
             <option
               *ngFor="let priority of TicketPriority | keyvalue"
@@ -45,21 +53,29 @@
           </select>
         </div>
         <div class="field col-12 md:col-8 submit-description">
-          <label for="title">Title</label>
+          <label for="title"><span class="required">*</span>Title</label>
           <input
             id="title"
             type="text"
             formControlName="title"
             class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"
+            [ngClass]="{
+              'border-red-500': formSubmitted && form.get('title')?.invalid
+            }"
           />
         </div>
         <div class="field col-12 md:col-4 submit-description">
-          <label for="asset-id">Choose your asset</label>
+          <label for="asset-id"
+            ><span class="required">*</span>Choose your asset</label
+          >
           <select
             id="asset-id"
             formControlName="assetId"
             class="w-full text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round outline-none focus:border-primary"
             style="appearance: auto"
+            [ngClass]="{
+              'border-red-500': formSubmitted && form.get('title')?.invalid
+            }"
           >
             <option *ngFor="let asset of assets" [value]="asset.id">
               {{ asset.modelName }}
@@ -67,12 +83,17 @@
           </select>
         </div>
         <div class="field col-12 submit-description">
-          <label for="description">Description</label>
+          <label for="description"
+            ><span class="required">*</span>Description</label
+          >
           <textarea
             id="description"
             formControlName="context"
             rows="4"
             class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"
+            [ngClass]="{
+              'border-red-500': formSubmitted && form.get('title')?.invalid
+            }"
           ></textarea>
         </div>
       </div>
