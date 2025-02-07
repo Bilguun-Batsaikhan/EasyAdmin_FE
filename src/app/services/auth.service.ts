@@ -16,7 +16,7 @@ export class AuthService {
     const loginData = identifier.includes('@')
       ? { email: identifier, password }
       : { username: identifier, password };
-    console.log('Login Data:', loginData);
+    // console.log('Login Data:', loginData);
 
     return this.http
       .post<any>(`${this.baseUrl}${this.urlLogin}`, loginData)
@@ -27,11 +27,34 @@ export class AuthService {
       );
   }
 
+  recoverPassword(emailRecovery: string): Observable<string> {
+    return this.http
+      .post<any>(`${this.baseUrl}/auth/recovery`, { email: emailRecovery })
+      .pipe(
+        tap((response) => {
+          console.log('Recovery response:', response);
+        })
+      );
+  }
+
+  resetPassword(newPassword: string): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/auth/reset`, {
+      password: newPassword,
+    });
+  }
   refreshToken(): Observable<any> {
     const refreshToken = localStorage.getItem('refreshToken');
-    return this.http.post<any>(`${this.baseUrl}${this.urlLogin}/refresh`, {
-      refreshToken,
-    });
+    const accessToken = localStorage.getItem('accessToken');
+
+    const headers = {
+      Authorization: `Bearer ${accessToken}`, // Access token-ийг header-т нэмнэ
+    };
+
+    return this.http.post<any>(
+      `${this.baseUrl}${this.urlLogin}/refresh`,
+      { refreshToken: refreshToken },
+      { headers: headers } // Headers-ийг тохиргоонд нэмэх
+    );
   }
 
   logout(): void {

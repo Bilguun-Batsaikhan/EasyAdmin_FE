@@ -22,7 +22,7 @@ export class AssetsService {
     pageSize: number = 10,
     filters?: { [key: string]: any }
   ): Observable<{ data: Asset[]; totalElements: number; totalPages: number }> {
-    console.log('Filters', filters);
+    //console.log('Filters', filters);
     let queryParams = `page=${page}&pageSize=${pageSize}`;
 
     if (filters) {
@@ -37,7 +37,6 @@ export class AssetsService {
     }
 
     const requestUrl = `${this.baseUrl}${this.urlAssets}?${queryParams}`;
-    console.log('Request URL:', requestUrl);
 
     return this.http.get<any>(requestUrl).pipe(
       map((response) => ({

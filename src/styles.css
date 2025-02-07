@@ -12,3 +12,10 @@ body {
   color: white;
   border: none;
 }
+
+.custom-button {
+  color: #f4f5f5;
+  font-weight: bold;
+  background-color: #e81b44;
+  border-color: #e81b44;
+}

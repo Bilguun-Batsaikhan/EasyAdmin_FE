@@ -146,8 +146,8 @@ export class AssetTableComponent {
       }
     }
 
-    console.log('Extracted Filters:', filters);
-    console.log('Pagination:', this.pageNo, this.pageSize);
+    // // console.log('Extracted Filters:', filters);
+    // console.log('Pagination:', this.pageNo, this.pageSize);
 
     this.loadAssets(filters);
   }
@@ -183,11 +183,11 @@ export class AssetTableComponent {
     if (asset) {
       this.editMode = true;
       this.assetToBeinserted = { ...asset };
-      console.log('Editing asset:', this.assetToBeinserted);
+      // console.log('Editing asset:', this.assetToBeinserted);
     } else {
       this.editMode = false;
       this.resetAssetForm();
-      console.log('Adding new asset:', this.assetToBeinserted);
+      // console.log('Adding new asset:', this.assetToBeinserted);
     }
     // Open the dialog
     this.visible = true;
@@ -225,10 +225,11 @@ export class AssetTableComponent {
   }
 
   onSave(asset: any, edit: boolean): void {
+    const username = asset.username;
     asset = this.convertAssetForServer(asset);
 
     if (edit) {
-      console.log('Edit asset:', asset);
+      // console.log('Edit asset:', asset);
       this.assetsService.patchAsset(asset).subscribe({
         next: (updatedAsset: Asset) => {
           if (updatedAsset.userID) {
@@ -262,6 +263,7 @@ export class AssetTableComponent {
       console.log('Save asset:', asset);
       this.assetsService.postAsset(asset).subscribe({
         next: (response: string) => {
+          asset.username = username; // Assign the username to the asset
           this.addTableRow(asset); // Add a new row to the table
           this.commonService.successMessage('Asset added successfully');
           this.visible = false; // Close the dialog
@@ -287,7 +289,7 @@ export class AssetTableComponent {
   }
 
   viewAssetHistory(assetId: any): void {
-    console.log('Viewing asset history:', assetId);
+    // // console.log('Viewing asset history:', assetId);
     this.router.navigate(['/assets-history'], {
       queryParams: { assetId: assetId },
     });

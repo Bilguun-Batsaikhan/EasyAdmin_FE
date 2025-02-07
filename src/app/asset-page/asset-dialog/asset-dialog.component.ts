@@ -81,7 +81,7 @@ export class AssetDialogComponent implements OnChanges, OnInit {
   ngOnInit(): void {
     const role = localStorage.getItem('role');
     if (role === 'SUPER_ADMIN' || role === 'SYSTEM_ADMIN') {
-      this.userService.getUsers().subscribe((users) => {
+      this.userService.getAllUsers().subscribe((users) => {
         this.users = users.data;
         this.usernames = this.users.map((user) => ({
           label: user.username,
@@ -94,7 +94,14 @@ export class AssetDialogComponent implements OnChanges, OnInit {
 
   ngOnChanges(): void {
     if (this.editMode && this.assetToBeInserted) {
-      this.form.patchValue(this.assetToBeInserted);
+      const selectedUser = this.usernames.find(
+        (user) => user.label === this.assetToBeInserted.username
+      );
+
+      this.form.patchValue({
+        ...this.assetToBeInserted,
+        username: selectedUser || null,
+      });
     } else {
       this.resetAssetForm();
     }
@@ -107,26 +114,38 @@ export class AssetDialogComponent implements OnChanges, OnInit {
 
   onSave(): void {
     this.formSubmitted = true;
+
     if (this.form.valid) {
       const formValues = this.form.value;
 
-      console.log('Form values:', formValues.username);
-      const selectedUser = this.usernames.find(
-        (user) => user.label === formValues.username.label
-      );
+      console.log('Form values:', formValues?.username);
+
+      // Safely check if formValues.username and its label exist
+      const selectedUser = formValues?.username
+        ? this.usernames.find(
+            (user) => user.label === formValues.username.label
+          )
+        : null;
+
       console.log('Selected user:', selectedUser);
+
       const updatedAsset = {
         ...this.assetToBeInserted,
         ...formValues,
         status: formValues.status || this.assetToBeInserted.status,
-        username: selectedUser ? selectedUser.label : null, // Use the username
-        userID: selectedUser ? selectedUser.value : null, // Include the user ID
+        username: selectedUser?.label || null, // Use the username safely
+        userID: selectedUser?.value || null, // Include the user ID safely
       };
 
-      console.log('(dialog) updatedAsset:', updatedAsset);
+      // Filter out null or undefined values
+      const filteredAsset = Object.fromEntries(
+        Object.entries(updatedAsset).filter(([_, value]) => value != null)
+      );
+
+      console.log('(dialog) filteredAsset:', filteredAsset);
 
       this.save.emit({
-        asset: updatedAsset,
+        asset: filteredAsset,
         editMode: this.editMode,
       });
 

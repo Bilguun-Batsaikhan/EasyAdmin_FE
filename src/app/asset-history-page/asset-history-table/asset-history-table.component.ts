@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
@@ -37,6 +37,7 @@ export class AssetHistoryTableComponent {
   totalPages: number = 0;
   activeFilters: { field: string; value: any }[] = [];
   givenAssetHistoryLoad: boolean = true;
+  @ViewChild('dt2') table!: Table;
 
   statusOptions = [
     { label: 'AVAILABLE', value: 'AVAILABLE' },

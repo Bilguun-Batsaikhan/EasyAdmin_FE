@@ -8,6 +8,7 @@ import { AssetHistoryComponent } from './asset-history-page/asset-history/asset-
 import { TicketsComponent } from './ticket-page/tickets/tickets.component';
 import { TicketOpenComponent } from './ticket-page/ticket-open/ticket-open.component';
 import { TicketCloseComponent } from './ticket-page/ticket-close/ticket-close.component';
+import { ResetPasswordComponent } from './login-page/reset-password/reset-password.component';
 
 const routeConfig: Routes = [
   {
@@ -66,6 +67,11 @@ const routeConfig: Routes = [
     title: 'Close a Ticket',
     canActivate: [authGuard],
     data: { roles: ['SUPER_ADMIN', 'SYSTEM_ADMIN'] },
+  },
+  {
+    path: 'reset-password',
+    component: ResetPasswordComponent,
+    title: 'Reset Password Page',
   },
 ];
 export default routeConfig;

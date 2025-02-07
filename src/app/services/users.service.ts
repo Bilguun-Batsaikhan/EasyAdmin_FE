@@ -59,6 +59,12 @@ export class UsersService {
     );
   }
 
+  getAllUsers(page: number = 0, pageSize: number = 50): Observable<any> {
+    const requestUrl = `${this.baseUrl}/users?page=${page}&pageSize=${pageSize}`;
+    console.log('Request URL:', requestUrl);
+    return this.http.get<any>(requestUrl);
+  }
+
   postUser(user: User): Observable<string> {
     const headers = new HttpHeaders().set('Content-Type', 'application/json');
     return this.http

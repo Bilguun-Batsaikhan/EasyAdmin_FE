@@ -57,7 +57,7 @@ export class NavigationBarComponent implements OnInit {
       {
         label: 'Assets History',
         icon: 'pi pi-fw pi-clock',
-        routerLink: '/assets-history',
+        command: () => this.navigateTo('/assets-history'),
         roles: ['SUPER_ADMIN', 'SYSTEM_ADMIN'],
       },
       {
@@ -74,11 +74,19 @@ export class NavigationBarComponent implements OnInit {
     );
   }
 
+  navigateTo(route: string) {
+    window.location.href = route;
+  }
+
   onSignOut() {
     this.authService.logout();
   }
 
   isLoggedIn(): boolean {
+    // Check if the current URL is '/reset-password'
+    if (this.router.url === '/reset-password') {
+      return false;
+    }
     return localStorage.length > 0;
   }
 

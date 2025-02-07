@@ -132,8 +132,33 @@ export class CommonService {
     event: any,
     activeFilters: { field: string; value: any }[]
   ): void {
-    const filters = event.filters;
+    //console.log('Filters:', event.filters);
 
+    const clearedFilters = Object.entries(event.filters).filter(
+      ([key, conditions]) => {
+        const conditionArray = conditions as {
+          value: any;
+          matchMode: string;
+          operator: string;
+        }[];
+        return conditionArray[0]?.value === null;
+      }
+    );
+
+    if (clearedFilters.length) {
+      //console.log('Cleared filters:', clearedFilters);
+      // Remove cleared filters from activeFilters
+      clearedFilters.forEach(([field]) => {
+        const index = activeFilters.findIndex(
+          (filter) => filter.field === field
+        );
+        if (index !== -1) {
+          activeFilters.splice(index, 1);
+        }
+      });
+    }
+
+    const filters = event.filters;
     Object.keys(filters).forEach((field) => {
       const filterArray = filters[field]; // Each filter field contains an array
       if (filterArray?.length) {
@@ -144,7 +169,18 @@ export class CommonService {
             filterValue instanceof Object
               ? JSON.stringify(filterValue)
               : filterValue;
-          activeFilters.push({ field, value: valueToDisplay });
+
+          // Check if the filter is already in activeFilters
+          const existingFilterIndex = activeFilters.findIndex(
+            (filter) => filter.field === field
+          );
+
+          if (existingFilterIndex === -1) {
+            activeFilters.push({ field, value: valueToDisplay });
+          } else {
+            // Update the existing filter value if needed
+            activeFilters[existingFilterIndex].value = valueToDisplay;
+          }
         }
       }
     });

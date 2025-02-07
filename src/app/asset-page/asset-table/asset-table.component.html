@@ -143,7 +143,9 @@
         <th *ngIf="hasAdminRole()" style="width: 5%" class="px-0 text-center">
           Del
         </th>
-        <th style="width: 5%" class="px-0 text-center">History</th>
+        <th *ngIf="hasAdminRole()" style="width: 5%" class="px-0 text-center">
+          History
+        </th>
       </tr>
     </ng-template>
 
@@ -190,7 +192,7 @@
             />
           </div>
         </td>
-        <td>
+        <td *ngIf="hasAdminRole()">
           <div class="flex justify-content-center">
             <p-button
               icon="pi pi-history"

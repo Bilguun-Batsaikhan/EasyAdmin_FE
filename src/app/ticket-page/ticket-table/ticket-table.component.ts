@@ -162,6 +162,10 @@ export class TicketTableComponent {
         let filterValue = filterMeta.value;
         const matchMode = filterMeta.matchMode;
 
+        if (field === 'issuedAt' && filterValue instanceof Date) {
+          filterValue = this.commonService.formatDate(filterValue);
+        }
+
         if (filterValue !== undefined && filterValue !== null) {
           filters[field] = filterValue;
           if (matchMode) {

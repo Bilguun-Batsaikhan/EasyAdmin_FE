@@ -1,13 +1,20 @@
-<form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-  <div class="surface-100 flex flex-column h-22rem custom-border-round">
+<div class="card ml-4 flex flex-column md:flex-row">
+  <p-toast />
+  <p-confirmPopup />
+  <!-- Login Form -->
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit($event, 'signIn')">
     <div
-      class="flex align-items-center justify-content-center h-4rem font-bold border-round mt-4"
+      class="flex flex-column h-22rem custom-border-round px-5"
+      style="background-color: rgb(244, 245, 245)"
     >
-      <h1>Login</h1>
-    </div>
-    <div class="relative-container">
-      <p-floatLabel
-        class="flex align-items-center justify-content-center h-4rem font-bold border-round mx-4"
+      <div
+        class="flex align-items-center justify-content-center h-4rem font-bold border-round mt-4"
+      >
+        <h4>Login</h4>
+      </div>
+      <label for="email" class="ml-4 mb-2">Email or Username</label>
+      <div
+        class="relative-container flex align-items-center justify-content-center flex-column gap-2"
       >
         <input
           pInputText
@@ -16,26 +23,24 @@
           formControlName="email"
           placeholder="Enter email"
         />
-        <label for="email">Email</label>
-      </p-floatLabel>
-      <!-- Validation of email -->
-      <div
-        *ngIf="
-          loginForm.get('email')?.invalid && loginForm.get('email')?.touched
-        "
-        class="validation-message absolute-message"
-      >
-        <div *ngIf="loginForm.get('email')?.errors?.['required']">
-          Email is required.
-        </div>
-        <div *ngIf="loginForm.get('email')?.errors?.['email']">
-          Email is invalid.
+        <!-- Validation of email -->
+        <div
+          *ngIf="
+            loginForm.get('email')?.invalid && loginForm.get('email')?.touched
+          "
+          class="validation-message absolute-message"
+        >
+          <div *ngIf="loginForm.get('email')?.errors?.['required']">
+            Email is required.
+          </div>
+          <div *ngIf="loginForm.get('email')?.errors?.['email']">
+            Email is invalid.
+          </div>
         </div>
       </div>
-    </div>
-    <div class="relative-container">
-      <p-floatLabel
-        class="flex align-items-center justify-content-center h-4rem font-bold border-round mx-4"
+      <label for="password" class="ml-4 mb-2">Password</label>
+      <div
+        class="relative-container flex align-items-center justify-content-center flex-column gap-2"
       >
         <input
           pInputText
@@ -44,34 +49,105 @@
           formControlName="password"
           placeholder="Enter password"
         />
-        <label for="password">Password</label>
-      </p-floatLabel>
-      <!-- Validation of password -->
-      <div
-        *ngIf="
-          loginForm.get('password')?.invalid &&
-          loginForm.get('password')?.touched
-        "
-        class="validation-message absolute-message"
-      >
-        <div *ngIf="loginForm.get('password')?.errors?.['required']">
-          Password is required.
+
+        <!-- Validation of password -->
+        <div
+          *ngIf="
+            loginForm.get('password')?.invalid &&
+            loginForm.get('password')?.touched
+          "
+          class="validation-message absolute-message"
+        >
+          <small *ngIf="loginForm.get('password')?.errors?.['required']">
+            Password is required.
+          </small>
+          <small *ngIf="loginForm.get('password')?.errors?.['minlength']">
+            Password must be at least 8 characters long.
+          </small>
         </div>
-        <div *ngIf="loginForm.get('password')?.errors?.['minlength']">
-          Password must be at least 8 characters long.
+        <!-- Login failed message -->
+        <small *ngIf="loginFailed" class="validation-message">
+          Username or password is wrong.
+        </small>
+      </div>
+
+      <p-button
+        type="submit"
+        label="Sign In"
+        icon="pi pi-sign-in"
+        text="true"
+        [raised]="true"
+        styleClass="w-8rem flex align-items-center justify-content-center font-bold border-round m-4 mx-6"
+      ></p-button>
+    </div>
+  </form>
+
+  <div class="w-full md:w-2 h-22rem">
+    <p-divider layout="vertical" styleClass="hidden md:flex">
+      <b>OR</b>
+    </p-divider>
+    <p-divider
+      layout="horizontal"
+      styleClass="flex md:hidden"
+      [align]="'center'"
+    >
+      <b>OR</b>
+    </p-divider>
+  </div>
+
+  <!-- Recovery Form -->
+  <form
+    [formGroup]="recoveryForm"
+    (ngSubmit)="onSubmit($event, 'recover')"
+    class="flex flex-column h-22rem custom-border-round px-5"
+    style="background-color: #262626"
+  >
+    <div
+      class="flex align-items-center justify-content-center h-4rem font-bold border-round mt-4 col-white-smoke"
+    >
+      <h4>Password Reset</h4>
+    </div>
+    <p class="w-15rem col-white-smoke">
+      Enter your email address and we will send you a link to reset your
+      password.
+    </p>
+    <div class="align-items-start">
+      <label for="emailRecovery" class="col-white-smoke">Email</label>
+      <div
+        class="mt-2 relative-container flex align-items-center justify-content-center flex-column gap-2"
+      >
+        <input
+          pInputText
+          type="email"
+          id="emailRecovery"
+          formControlName="emailRecovery"
+          placeholder="Enter email"
+        />
+        <!-- Validation of email -->
+        <div
+          *ngIf="
+            recoveryForm.get('emailRecovery')?.invalid &&
+            recoveryForm.get('emailRecovery')?.touched
+          "
+          class="validation-message absolute-message"
+        >
+          <div *ngIf="recoveryForm.get('emailRecovery')?.errors?.['required']">
+            Email is required.
+          </div>
+          <div *ngIf="recoveryForm.get('emailRecovery')?.errors?.['email']">
+            Email is invalid.
+          </div>
         </div>
       </div>
     </div>
 
     <p-button
       type="submit"
-      label="Sign In"
-      icon="pi pi-sign-in"
-      severity="primary"
-      text="true"
+      label="Recover"
+      icon="pi pi-user-edit"
       [raised]="true"
-      [styleClass]="'w-8rem'"
-      class="flex align-items-center justify-content-center font-bold border-round m-2 mx-6"
+      [loading]="loading"
+      styleClass="custom-button flex align-items-center justify-content-center font-bold border-round m-4 mx-6"
     ></p-button>
-  </div>
-</form>
+  </form>
+</div>
