@@ -9,15 +9,18 @@ import { catchError, map } from 'rxjs/operators';
 import { Ticket } from '../interfaces/tickets';
 import { CreateTicket } from '../interfaces/createTicket';
 import { TicketStatus } from '../enumeration/TicketStatus';
-
+import { API_CONFIG } from '../config/api.config';
 @Injectable({
   providedIn: 'root',
 })
 export class TicketsService {
-  baseUrl: string = 'http://localhost:8070/bff';
+  // baseUrl: string = 'http://localhost:8070/bff';
+  baseUrl: string;
   urlTickets: string = '/tickets';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    this.baseUrl = API_CONFIG.baseUrl;
+  }
 
   getTickets(
     page: number = 0,

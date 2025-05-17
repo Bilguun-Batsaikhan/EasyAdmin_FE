@@ -7,14 +7,18 @@ import {
   HttpErrorResponse,
 } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
+import { API_CONFIG } from '../config/api.config';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AssetHistoryService {
-  baseUrl: string = 'http://localhost:8070/bff';
+  // baseUrl: string = 'http://localhost:8070/bff';
+  baseUrl: string;
   urlAssetHistory: string = '/assets/history';
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    this.baseUrl = API_CONFIG.baseUrl;
+  }
 
   getAssetHistory(
     page: number = 0,

@@ -7,15 +7,18 @@ import {
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { User } from '../interfaces/users';
-
+import { API_CONFIG } from '../config/api.config';
 @Injectable({
   providedIn: 'root',
 })
 export class UsersService {
-  baseUrl: string = 'http://localhost:8070/bff';
+  // baseUrl: string = 'http://localhost:8070/bff';
+  baseUrl: string;
   urlUsers: string = '/users';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    this.baseUrl = API_CONFIG.baseUrl;
+  }
 
   getUser(userId?: number): Observable<User> {
     if (!userId) {

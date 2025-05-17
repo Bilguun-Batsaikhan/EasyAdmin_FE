@@ -7,15 +7,18 @@ import {
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { Asset } from '../interfaces/assets';
-
+import { API_CONFIG } from '../config/api.config';
 @Injectable({
   providedIn: 'root',
 })
 export class AssetsService {
-  baseUrl: string = 'http://localhost:8070/bff';
+  // baseUrl: string = 'http://localhost:8070/bff';
+  baseUrl: string;
   urlAssets: string = '/assets';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    this.baseUrl = API_CONFIG.baseUrl;
+  }
 
   getAssets(
     page: number = 0,
