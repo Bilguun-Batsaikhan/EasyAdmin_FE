@@ -2,15 +2,18 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { Router } from '@angular/router';
-
+import { API_CONFIG } from '../config/api.config';
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  baseUrl: string = 'http://localhost:8070/bff';
+  // baseUrl: string = 'http://localhost:8070/bff';
+  baseUrl: string;
   urlLogin: string = '/auth/login';
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router) {
+    this.baseUrl = API_CONFIG.baseUrl;
+  }
 
   login(identifier: string, password: string): Observable<any> {
     const loginData = identifier.includes('@')
