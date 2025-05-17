@@ -81,6 +81,7 @@
             formControlName="username"
             optionLabel="label"
             placeholder="Select a User"
+            appendTo="body"
             [ngClass]="{
               'ng-invalid': formSubmitted && form.get('username')?.invalid,
               'ng-dirty': formSubmitted
